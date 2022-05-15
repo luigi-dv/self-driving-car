@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Neuronal Network | Self Car Driving</title>
+    <meta name="description" content="Neuronal Network that is applied in a self driving car animation. Created by Ldvloper">
+    <meta name="subject" content="Self Car Driving | Neuronal Network">
+    <meta name="keywords" content="Javascript, Neuronal Network, Automatización, Self Learning"/>
+    <meta name="author" content="Luigelo Davila">
+
+    <!-- ==============================================
+    Favicons
+  =============================================== -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- ==============================================
+    Social
+  =============================================== -->
+    <meta property='og:title' content='Self Car Driving | Neuronal Network'/>
+    <meta property='og:image' content="http://self-driving-car.neuronalnetwork.ldvloper.com/social-preview.png"/>
+    <meta property="og:image:secure_url" content="https://self-driving-car.neuronalnetwork.ldvloper.com/social-preview.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property='og:description' content='Neuronal Network that is applied in a self driving car animation. Created by Ldvloper'/>
+    <meta property='og:url' content='https//self-driving-car.neuronalnetwork.ldvloper.com'/>
+    <!--Style-->
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <div id="verticalButtons">
+        <button onclick="save()">
+            <svg xmlns="http://www.w3.org/2000/svg" style="height: 12px; width: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+        </button>
+        <button onclick="discard()">
+            <svg xmlns="http://www.w3.org/2000/svg" style="height: 12px; width: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
+            </svg>
+        </button>
+    </div>
+    <!--Scripts-->
+    <canvas id="networkCanvas"></canvas>
+    <script src="src/js/visualizer.js"></script>
+    <script src="src/js/network.js"></script>
+    <script src="src/js/sensor.js"></script>
+    <script src="src/js/utils.js"></script>
+    <script src="src/js/road.js"></script>
+    <script src="src/js/controls.js"></script>
+    <script src="src/js/car.js"></script>
+    <script src="src/js/main.js"></script>
+</body>
+</html>
