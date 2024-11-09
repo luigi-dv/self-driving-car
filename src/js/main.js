@@ -9,45 +9,71 @@ const networkCtx = networkCanvas.getContext("2d");
 const road=new Road(myCanvas.width/2,myCanvas.width*0.9);
 
 const N=100;
-const cars=generateCars(N);
-let bestCar=cars[0];
-const saved=BrainStorage.load();
-if(saved){
-    for(let i=0;i<cars.length;i++){
-        cars[i].brain=JSON.parse(
-            JSON.stringify(saved.brain));
-        if(i!=0){
-            NeuralNetwork.mutate(cars[i].brain,0.1);
-        }
-    }
-}
+let cars=[];
+let traffic=[];
+let bestCar=null;
 
-const traffic=[
-    new Car(road.getLaneCenter(1),-100,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(0),-300,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(2),-300,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(0),-500,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(1),-500,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(1),-700,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(2),-700,30,50,"DUMMY",2,getRandomColor()),
-];
+const saved=BrainStorage.load();
+startSimulation(saved?saved.brain:null);
+updateButtons();
 
 animate();
 
 function save(){
     BrainStorage.save(bestCar.brain);
+    updateButtons();
 }
 
 function discard(){
     BrainStorage.discard();
+    startSimulation(null);
+    updateButtons();
 }
 
-function generateCars(N){
+function restore(){
+    const record=BrainStorage.restore();
+    if(record){
+        startSimulation(record.brain);
+    }
+    updateButtons();
+}
+
+function updateButtons(){
+    document.getElementById("restoreButton").disabled=
+        !BrainStorage.hasBackup();
+}
+
+function startSimulation(parentBrain=null){
+    cars=generateCars(N,parentBrain);
+    traffic=generateTraffic();
+    bestCar=cars[0];
+}
+
+function generateCars(N,parentBrain=null){
     const cars=[];
-    for(let i=1;i<=N;i++){
-        cars.push(new Car(road.getLaneCenter(1),100,30,50,"AI"));
+    for(let i=0;i<N;i++){
+        const car=new Car(road.getLaneCenter(1),100,30,50,"AI");
+        if(parentBrain){
+            car.brain=NeuralNetwork.clone(parentBrain);
+            if(i!=0){
+                NeuralNetwork.mutate(car.brain,0.1);
+            }
+        }
+        cars.push(car);
     }
     return cars;
+}
+
+function generateTraffic(){
+    return [
+        new Car(road.getLaneCenter(1),-100,30,50,"DUMMY",2,getRandomColor()),
+        new Car(road.getLaneCenter(0),-300,30,50,"DUMMY",2,getRandomColor()),
+        new Car(road.getLaneCenter(2),-300,30,50,"DUMMY",2,getRandomColor()),
+        new Car(road.getLaneCenter(0),-500,30,50,"DUMMY",2,getRandomColor()),
+        new Car(road.getLaneCenter(1),-500,30,50,"DUMMY",2,getRandomColor()),
+        new Car(road.getLaneCenter(1),-700,30,50,"DUMMY",2,getRandomColor()),
+        new Car(road.getLaneCenter(2),-700,30,50,"DUMMY",2,getRandomColor()),
+    ];
 }
 
 function animate(time){

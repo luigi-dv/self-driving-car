@@ -18,6 +18,10 @@ class NeuralNetwork{
         return outputs;
     }
 
+    static clone(network){
+        return JSON.parse(JSON.stringify(network));
+    }
+
     static mutate(network,amount=1){
         network.levels.forEach(level => {
             for(let i=0;i<level.biases.length;i++){
