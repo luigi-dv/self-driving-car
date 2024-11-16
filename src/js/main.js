@@ -10,7 +10,7 @@ const road=new Road(myCanvas.width/2,myCanvas.width*0.9);
 
 const N=100;
 let cars=[];
-let traffic=[];
+let traffic=null;
 let bestCar=null;
 
 const saved=BrainStorage.load();
@@ -45,7 +45,7 @@ function updateButtons(){
 
 function startSimulation(parentBrain=null){
     cars=generateCars(N,parentBrain);
-    traffic=generateTraffic();
+    traffic=new Traffic(road);
     bestCar=cars[0];
 }
 
@@ -64,24 +64,10 @@ function generateCars(N,parentBrain=null){
     return cars;
 }
 
-function generateTraffic(){
-    return [
-        new Car(road.getLaneCenter(1),-100,30,50,"DUMMY",2,getRandomColor()),
-        new Car(road.getLaneCenter(0),-300,30,50,"DUMMY",2,getRandomColor()),
-        new Car(road.getLaneCenter(2),-300,30,50,"DUMMY",2,getRandomColor()),
-        new Car(road.getLaneCenter(0),-500,30,50,"DUMMY",2,getRandomColor()),
-        new Car(road.getLaneCenter(1),-500,30,50,"DUMMY",2,getRandomColor()),
-        new Car(road.getLaneCenter(1),-700,30,50,"DUMMY",2,getRandomColor()),
-        new Car(road.getLaneCenter(2),-700,30,50,"DUMMY",2,getRandomColor()),
-    ];
-}
-
 function animate(time){
-    for(let i=0;i<traffic.length;i++){
-        traffic[i].update(road.borders,[]);
-    }
+    traffic.update(road.borders,bestCar.y);
     for(let i=0;i<cars.length;i++){
-        cars[i].update(road.borders,traffic);
+        cars[i].update(road.borders,traffic.cars);
     }
     bestCar=cars.find(
         c=>c.y===Math.min(
@@ -95,9 +81,7 @@ function animate(time){
     carCtx.translate(0,-bestCar.y+myCanvas.height*0.7);
 
     road.draw(carCtx);
-    for(let i=0;i<traffic.length;i++){
-        traffic[i].draw(carCtx);
-    }
+    traffic.draw(carCtx);
     carCtx.globalAlpha=0.2;
     for(let i=0;i<cars.length;i++){
         cars[i].draw(carCtx);
