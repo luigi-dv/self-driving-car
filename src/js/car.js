@@ -1,4 +1,7 @@
 class Car{
+    static hiddenLayers=[6];
+    static hiddenActivation="step";
+
     constructor(x,y,width,height,controlType,maxSpeed=3,color="blue"){
         this.x=x;
         this.y=y;
@@ -17,7 +20,8 @@ class Car{
         if(controlType!="DUMMY"){
             this.sensor=new Sensor(this);
             this.brain=new NeuralNetwork(
-                [this.sensor.rayCount,6,4]
+                [this.sensor.rayCount,...Car.hiddenLayers,4],
+                Car.hiddenActivation
             );
         }
         this.controls=new Controls(controlType);

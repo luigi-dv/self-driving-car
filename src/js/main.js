@@ -109,7 +109,7 @@ function generateCars(N,parentBrain=null){
     const cars=[];
     for(let i=0;i<N;i++){
         const car=new Car(road.getLaneCenter(1),startY,30,50,"AI");
-        if(parentBrain){
+        if(NeuralNetwork.matches(parentBrain,car.brain)){
             car.brain=NeuralNetwork.clone(parentBrain);
             if(i!=0){
                 NeuralNetwork.mutate(car.brain,0.1);

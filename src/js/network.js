@@ -1,9 +1,11 @@
 class NeuralNetwork{
-    constructor(neuronCounts){
+    constructor(neuronCounts,hiddenActivation="step"){
         this.levels=[];
         for(let i=0;i<neuronCounts.length-1;i++){
+            const isOutput=i==neuronCounts.length-2;
             this.levels.push(new Level(
-                neuronCounts[i],neuronCounts[i+1]
+                neuronCounts[i],neuronCounts[i+1],
+                isOutput?"step":hiddenActivation
             ));
         }
     }
@@ -20,6 +22,26 @@ class NeuralNetwork{
 
     static clone(network){
         return JSON.parse(JSON.stringify(network));
+    }
+
+    static matches(networkA,networkB){
+        if(!networkA || !networkB
+            || !Array.isArray(networkA.levels)
+            || !Array.isArray(networkB.levels)
+            || networkA.levels.length!=networkB.levels.length){
+            return false;
+        }
+        for(let i=0;i<networkA.levels.length;i++){
+            const levelA=networkA.levels[i];
+            const levelB=networkB.levels[i];
+            if(!Array.isArray(levelA.weights)
+                || !Array.isArray(levelA.biases)
+                || levelA.weights.length!=levelB.weights.length
+                || levelA.biases.length!=levelB.biases.length){
+                return false;
+            }
+        }
+        return true;
     }
 
     static mutate(network,amount=1){
@@ -45,10 +67,11 @@ class NeuralNetwork{
 }
 
 class Level{
-    constructor(inputCount,outputCount){
+    constructor(inputCount,outputCount,activation="step"){
         this.inputs=new Array(inputCount);
         this.outputs=new Array(outputCount);
         this.biases=new Array(outputCount);
+        this.activation=activation;
 
         this.weights=[];
         for(let i=0;i<inputCount;i++){
@@ -81,13 +104,43 @@ class Level{
                 sum+=level.inputs[j]*level.weights[j][i];
             }
 
-            if(sum>level.biases[i]){
-                level.outputs[i]=1;
-            }else{
-                level.outputs[i]=0;
-            }
+            level.outputs[i]=Activation.apply(
+                level.activation,
+                sum-level.biases[i]
+            );
         }
 
         return level.outputs;
+    }
+}
+
+class Activation{
+    static apply(name,value){
+        switch(name){
+            case "sigmoid":
+                return Activation.sigmoid(value);
+            case "tanh":
+                return Activation.tanh(value);
+            case "relu":
+                return Activation.relu(value);
+            default:
+                return Activation.step(value);
+        }
+    }
+
+    static step(value){
+        return value>0?1:0;
+    }
+
+    static sigmoid(value){
+        return 1/(1+Math.exp(-value));
+    }
+
+    static tanh(value){
+        return Math.tanh(value);
+    }
+
+    static relu(value){
+        return Math.max(0,value);
     }
 }
