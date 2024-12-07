@@ -7,9 +7,34 @@ body{
     align-items:center;
 }
 
+#panel{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:120px;
+}
+
 #verticalButtons{
     display:flex;
     flex-direction:column;
+}
+
+#stats{
+    margin-top:10px;
+    padding:0 6px;
+    width:100%;
+    box-sizing:border-box;
+    font:11px monospace;
+    color:black;
+}
+#stats div{
+    display:flex;
+    justify-content:space-between;
+    margin:2px 0;
+}
+#stats input{
+    width:100%;
+    margin:2px 0;
 }
 
 button{

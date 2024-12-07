@@ -18,6 +18,9 @@ let traffic=null;
 let bestCar=null;
 let generation=1;
 let frame=0;
+let recordDistance=0;
+let mutationAmount=
+    parseFloat(localStorage.getItem("mutationAmount"))||0.1;
 let checkpoints=[];
 
 const saved=BrainStorage.load();
@@ -25,7 +28,9 @@ if(saved){
     generation=saved.generation;
 }
 startSimulation(saved?saved.brain:null);
+document.getElementById("mutationInput").value=mutationAmount;
 updateButtons();
+updateStats();
 
 animate();
 
@@ -40,6 +45,7 @@ function save(){
 function discard(){
     BrainStorage.discard();
     generation=1;
+    recordDistance=0;
     startSimulation(null);
     updateButtons();
 }
@@ -53,9 +59,35 @@ function restore(){
     updateButtons();
 }
 
+function setMutation(value){
+    mutationAmount=parseFloat(value);
+    localStorage.setItem("mutationAmount",mutationAmount);
+    updateStats();
+}
+
 function updateButtons(){
     document.getElementById("restoreButton").disabled=
         !BrainStorage.hasBackup();
+
+    const record=BrainStorage.load();
+    document.getElementById("savedStat").textContent=record
+        ?"gen "+record.generation
+        :"none";
+}
+
+function updateStats(){
+    const distance=Math.max(0,getDistance(bestCar));
+    recordDistance=Math.max(recordDistance,distance);
+
+    document.getElementById("generationStat").textContent=generation;
+    document.getElementById("aliveStat").textContent=
+        cars.filter(c=>!c.damaged).length+"/"+cars.length;
+    document.getElementById("distanceStat").textContent=
+        Math.round(distance);
+    document.getElementById("recordStat").textContent=
+        Math.round(recordDistance);
+    document.getElementById("mutationStat").textContent=
+        Math.round(mutationAmount*100)+"%";
 }
 
 function startSimulation(parentBrain=null){
@@ -112,7 +144,7 @@ function generateCars(N,parentBrain=null){
         if(NeuralNetwork.matches(parentBrain,car.brain)){
             car.brain=NeuralNetwork.clone(parentBrain);
             if(i!=0){
-                NeuralNetwork.mutate(car.brain,0.1);
+                NeuralNetwork.mutate(car.brain,mutationAmount);
             }
         }
         cars.push(car);
@@ -130,6 +162,9 @@ function animate(time){
         nextGeneration();
     }
     bestCar=getBestCar(cars);
+    if(frame%10==0){
+        updateStats();
+    }
 
     myCanvas.height=window.innerHeight;
     networkCanvas.height=window.innerHeight;
