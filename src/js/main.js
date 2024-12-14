@@ -24,10 +24,14 @@ let mutationAmount=
 let checkpoints=[];
 
 const saved=BrainStorage.load();
-if(saved){
-    generation=saved.generation;
-}
 startSimulation(saved?saved.brain:null);
+if(saved){
+    if(NeuralNetwork.matches(saved.brain,bestCar.brain)){
+        generation=saved.generation;
+    }else{
+        setStatus("Saved brain does not fit the network");
+    }
+}
 document.getElementById("mutationInput").value=mutationAmount;
 updateButtons();
 updateStats();
@@ -40,14 +44,18 @@ function save(){
         distance:getDistance(bestCar)
     });
     updateButtons();
+    setStatus("Brain saved");
 }
 
 function discard(){
-    BrainStorage.discard();
+    const discarded=BrainStorage.discard();
     generation=1;
     recordDistance=0;
     startSimulation(null);
     updateButtons();
+    setStatus(discarded
+        ?"Brain discarded, restore to undo"
+        :"Started over");
 }
 
 function restore(){
@@ -55,8 +63,51 @@ function restore(){
     if(record){
         generation=record.generation;
         startSimulation(record.brain);
+        setStatus("Brain restored");
     }
     updateButtons();
+}
+
+function exportBrain(){
+    const record={
+        brain:bestCar.brain,
+        generation:generation,
+        distance:getDistance(bestCar),
+        savedAt:Date.now()
+    };
+    const link=document.createElement("a");
+    link.href=URL.createObjectURL(new Blob(
+        [JSON.stringify(record)],
+        {type:"application/json"}
+    ));
+    link.download="brain-gen"+generation+".json";
+    link.click();
+    URL.revokeObjectURL(link.href);
+    setStatus("Brain exported");
+}
+
+function importBrain(input){
+    const file=input.files[0];
+    if(!file){
+        return;
+    }
+    const reader=new FileReader();
+    reader.onload=()=>{
+        const record=BrainStorage.parse(reader.result);
+        if(record && NeuralNetwork.matches(record.brain,bestCar.brain)){
+            generation=record.generation;
+            startSimulation(record.brain);
+            setStatus("Brain imported, save to keep it");
+        }else{
+            setStatus("This file does not fit the network");
+        }
+    };
+    reader.readAsText(file);
+    input.value="";
+}
+
+function setStatus(message){
+    document.getElementById("status").textContent=message;
 }
 
 function setMutation(value){
@@ -100,6 +151,7 @@ function startSimulation(parentBrain=null){
 
 function nextGeneration(){
     const parent=getBestCar(cars,false);
+    recordDistance=Math.max(recordDistance,getDistance(parent));
     generation++;
     startSimulation(
         getDistance(parent)>0?parent.brain:null
