@@ -162,7 +162,7 @@ function isGenerationOver(){
     if(cars.every(c=>c.damaged)){
         return true;
     }
-    if(frame%stallFrames==0){
+    if(frame>0 && frame%stallFrames==0){
         const moving=cars.some(
             (c,i)=>!c.damaged && checkpoints[i]-c.y>=minProgress
         );
@@ -205,14 +205,15 @@ function generateCars(N,parentBrain=null){
 }
 
 function animate(time){
+    if(isGenerationOver()){
+        nextGeneration();
+    }
+
     traffic.update(road.borders,bestCar.y);
     for(let i=0;i<cars.length;i++){
         cars[i].update(road.borders,traffic.cars);
     }
     frame++;
-    if(isGenerationOver()){
-        nextGeneration();
-    }
     bestCar=getBestCar(cars);
     if(frame%10==0){
         updateStats();
