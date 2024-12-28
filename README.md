@@ -14,13 +14,34 @@ The goal of this project is to create a neural network-based model for autonomou
 
 - **Simulation Environment:** The self-driving car operates in a simulated environment, providing a controlled setting for training and testing the neural network.
 
+- **Generations:** When every car has crashed or stopped making progress, the best brain becomes the parent of the next generation. The parent is kept untouched in one car and mutated in the others.
+
+- **Endless Traffic:** Traffic rows are generated at random ahead of the best car, so a brain has to learn to overtake instead of memorising one road.
+
+- **Configurable Network:** The hidden layers and their activation function (`step`, `sigmoid`, `tanh`, `relu`) are set with `Car.hiddenLayers` and `Car.hiddenActivation` in `src/js/car.js`.
+
+## Controls
+
+The buttons between the road and the network, from top to bottom:
+
+| Button | Action |
+| --- | --- |
+| Save | Stores the best brain in the browser (`localStorage`). |
+| Discard | Removes the saved brain and restarts with random brains. The removed brain is kept as a backup. |
+| Restore | Brings the discarded brain back. If a newer brain was saved in between, the two are swapped. |
+| Next generation | Ends the current generation without waiting. |
+| Export | Downloads the best brain as a JSON file. |
+| Import | Loads a brain from a JSON file. Press Save to keep it. |
+
+The slider sets how much the brains are mutated in the next generation.
+
 ## Getting Started
 
 Follow these steps to get the self-driving car simulation up and running on your local machine:
 
 1. **Clone the Repository:**
 ```bash
-git clone https://github.com/your-username/self-driving-car.git
+git clone https://github.com/luigi-dv/self-driving-car.git
 ```
 2. **Navigate to the Project Directory:**
    ```bash
