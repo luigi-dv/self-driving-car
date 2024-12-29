@@ -3,6 +3,8 @@ class Road{
         this.x=x;
         this.width=width;
         this.laneCount=laneCount;
+        this.laneWidth=width/laneCount;
+        this.handedness="RHT";
 
         this.left=x-width/2;
         this.right=x+width/2;
@@ -25,6 +27,26 @@ class Road{
         const laneWidth=this.width/this.laneCount;
         return this.left+laneWidth/2+
             Math.min(laneIndex,this.laneCount-1)*laneWidth;
+    }
+
+    // Policy lanes: lane 0 is the outermost slow lane, whatever the
+    // side of the road the traffic drives on
+    laneToX(lane){
+        const index=this.handedness=="RHT"
+            ?this.laneCount-1-lane
+            :lane;
+        return this.left+this.laneWidth*(index+0.5);
+    }
+
+    xToLanePosition(x){
+        const index=(x-this.left)/this.laneWidth-0.5;
+        return this.handedness=="RHT"
+            ?this.laneCount-1-index
+            :index;
+    }
+
+    xToLane(x){
+        return Math.round(this.xToLanePosition(x));
     }
 
     draw(ctx){
