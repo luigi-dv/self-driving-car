@@ -1,6 +1,7 @@
 class Car{
     static hiddenLayers=[6];
     static hiddenActivation="step";
+    static guidanceCount=3;
 
     constructor(x,y,width,height,controlType,maxSpeed=3,color="blue"){
         this.x=x;
@@ -14,13 +15,27 @@ class Car{
         this.friction=0.05;
         this.angle=0;
         this.damaged=false;
+        this.fitness=0;
+        this.directive=null;
+        this.guidance=new Array(Car.guidanceCount).fill(0);
+        this.memory={};
+        this.signals={
+            highBeam:false,
+            blinker:0,
+            hazards:false,
+            flashing:false
+        };
 
         this.useBrain=controlType=="AI";
 
         if(controlType!="DUMMY"){
             this.sensor=new Sensor(this);
             this.brain=new NeuralNetwork(
-                [this.sensor.rayCount,...Car.hiddenLayers,4],
+                [
+                    this.sensor.rayCount+Car.guidanceCount,
+                    ...Car.hiddenLayers,
+                    4
+                ],
                 Car.hiddenActivation
             );
         }
@@ -55,7 +70,8 @@ class Car{
             const offsets=this.sensor.readings.map(
                 s=>s==null?0:1-s.offset
             );
-            const outputs=NeuralNetwork.feedForward(offsets,this.brain);
+            const outputs=NeuralNetwork.feedForward(
+                offsets.concat(this.guidance),this.brain);
 
             if(this.useBrain){
                 this.controls.forward=outputs[0];
@@ -163,7 +179,36 @@ class Car{
             -this.height/2,
             this.width,
             this.height);
+        ctx.globalCompositeOperation="source-over";
+        this.#drawSignals(ctx);
         ctx.restore();
 
+    }
+
+    #drawSignals(ctx){
+        const blink=Math.floor(Date.now()/250)%2==0;
+        const w=this.width/2;
+        const h=this.height/2;
+        const light=(x,y,color)=>{
+            ctx.fillStyle=color;
+            ctx.fillRect(x-3,y-3,6,6);
+        };
+
+        if(this.signals.flashing){
+            light(-6,-6,blink?"blue":"red");
+            light(6,-6,blink?"red":"blue");
+        }
+        if(this.signals.highBeam && blink){
+            light(-w+5,-h,"white");
+            light(w-5,-h,"white");
+        }
+        if(blink && (this.signals.hazards || this.signals.blinker<0)){
+            light(-w+2,-h+4,"orange");
+            light(-w+2,h-4,"orange");
+        }
+        if(blink && (this.signals.hazards || this.signals.blinker>0)){
+            light(w-2,-h+4,"orange");
+            light(w-2,h-4,"orange");
+        }
     }
 }
