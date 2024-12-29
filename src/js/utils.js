@@ -2,6 +2,25 @@ function lerp(A,B,t){
     return A+(B-A)*t;
 }
 
+function clamp(value,min,max){
+    return Math.max(min,Math.min(max,value));
+}
+
+function approach(value,target,step){
+    return value<target
+        ?Math.min(target,value+step)
+        :Math.max(target,value-step);
+}
+
+function shuffle(items){
+    const result=items.slice();
+    for(let i=result.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [result[i],result[j]]=[result[j],result[i]];
+    }
+    return result;
+}
+
 function getIntersection(A,B,C,D){
     const tTop=(D.x-C.x)*(A.y-C.y)-(D.y-C.y)*(A.x-C.x);
     const uTop=(C.y-A.y)*(A.x-B.x)-(C.x-A.x)*(A.y-B.y);
