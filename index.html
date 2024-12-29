@@ -78,14 +78,20 @@
         <input id="importInput" type="file" accept=".json,application/json" onchange="importBrain(this)" hidden>
     </div>
     <div id="stats">
+        <select id="regionInput" onchange="setRegion(this.value)" title="Regional driving policy"></select>
         <div>Generation <b id="generationStat"></b></div>
         <div>Alive <b id="aliveStat"></b></div>
         <div>Distance <b id="distanceStat"></b></div>
         <div>Record <b id="recordStat"></b></div>
+        <div>Fitness <b id="fitnessStat"></b></div>
+        <div>Violations <b id="violationStat"></b></div>
         <div>Saved <b id="savedStat"></b></div>
         <div>Mutation <b id="mutationStat"></b></div>
         <input id="mutationInput" type="range" min="0.01" max="0.5" step="0.01" oninput="setMutation(this.value)" title="Mutation amount for the next generation">
         <p id="status"></p>
+        <p id="scenario"></p>
+        <p id="directive"></p>
+        <p id="violation"></p>
     </div>
     </div>
     <!--Scripts-->
@@ -102,6 +108,7 @@
     <script src="src/js/policy/yaml.js"></script>
     <script src="src/js/policy/profile.js"></script>
     <script src="src/js/traffic/vehicle.js"></script>
+    <script src="src/js/traffic/scenario.js"></script>
     <script src="src/js/traffic.js"></script>
     <script src="src/js/policy/baseline.js"></script>
     <script src="src/js/policy/perception.js"></script>

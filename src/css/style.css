@@ -11,7 +11,7 @@ body{
     display:flex;
     flex-direction:column;
     align-items:center;
-    width:120px;
+    width:160px;
 }
 
 #verticalButtons{
@@ -32,9 +32,22 @@ body{
     justify-content:space-between;
     margin:2px 0;
 }
-#status{
+#stats p{
     margin:6px 0 0 0;
+}
+#stats select{
+    width:100%;
+    margin-bottom:6px;
+    font:11px monospace;
+}
+#status{
     min-height:26px;
+}
+#scenario{
+    font-weight:bold;
+}
+#violation{
+    color:darkred;
 }
 #stats input{
     width:100%;
