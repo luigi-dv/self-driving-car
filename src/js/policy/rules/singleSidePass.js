@@ -81,6 +81,14 @@ class SingleSidePassRule extends PassingRule{
     // CONGESTION_OVERRIDE: speed difference allowed to pass on the
     // inside while the traffic is a queue, null when it is not
     getCongestionAllowance(perception){
+        const exception=this.profile.passing.congestion_exception||{};
+        const queueSpeed=PolicyProfile.speedKmh(exception,"max_queue_speed");
+        const delta=PolicyProfile.speedKmh(exception,"max_passing_delta");
+        if(exception.enabled
+            && perception.averageSpeedKmh!=null
+            && perception.averageSpeedKmh<queueSpeed){
+            return Units.toSpeed(delta);
+        }
         return null;
     }
 }
