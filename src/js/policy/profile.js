@@ -36,8 +36,7 @@ class PolicyProfile{
 }
 
 class PolicyRegistry{
-    constructor(document){
-        const policies=document.av_highway_behavioral_policies||{};
+    constructor(policies={}){
         this.version=policies.version;
         this.convention=policies.coordinate_convention||{};
         this.profiles=[];
@@ -46,14 +45,6 @@ class PolicyRegistry{
         for(const name in profiles){
             this.profiles.push(new PolicyProfile(name,profiles[name]));
         }
-    }
-
-    static async load(url){
-        const response=await fetch(url);
-        if(!response.ok){
-            throw new Error("Policies not found at "+url);
-        }
-        return new PolicyRegistry(Yaml.parse(await response.text()));
     }
 
     get(name){

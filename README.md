@@ -22,7 +22,7 @@ The goal of this project is to create a neural network-based model for autonomou
 
 ## Highway Policies
 
-The cars drive under the highway rules of a region. The rules live in [`src/config/av_highway_policies.yaml`](src/config/av_highway_policies.yaml), one profile per region (`EU_STRICT`, `UK_STRICT`, `NA_FLEXIBLE`, `JP_STRICT`), and the profile is picked in the panel.
+The cars drive under the highway rules of a region. The rules live in [`src/config/policies.js`](src/config/policies.js), one profile per region (`EU_STRICT`, `UK_STRICT`, `NA_FLEXIBLE`, `JP_STRICT`), and the profile is picked in the panel.
 
 Lanes are counted from the slow side: `lane_0` is the outermost lane and `lane_max` the fastest one, on the right or on the left depending on `traffic_handedness`.
 
@@ -51,7 +51,7 @@ Every frame, for every car:
 
 The traffic is scripted to put each rule to the test. A **scenario** (`traffic/scenarios/`) places vehicles and road features ahead of the best car, and every traffic vehicle follows a **technique** (cruise, ramp merge, zipper, gridlock, emergency run and so on).
 
-To add a rule, create a class that extends `PolicyRule` and register it with `PolicyOrchestrator.register`. To add a region, add a profile to the YAML file. The numbers that are not part of the policy (gaps, timings, scale, fitness weights) are in `src/js/settings.js`.
+To add a rule, create a class that extends `PolicyRule` and register it with `PolicyOrchestrator.register`. To add a region, add a profile to `src/config/policies.js`. The numbers that are not part of the policy (gaps, timings, scale, fitness weights) are in `src/js/settings.js`.
 
 ## Controls
 ## Controls
@@ -85,10 +85,7 @@ git clone https://github.com/luigi-dv/self-driving-car.git
    ```
 
 3. **Open the Simulation:**
-- Serve the folder and open it in a web browser. The policy file is loaded over http, so opening `index.html` straight from the disk runs the simulation without policies.
-   ```bash
-   python3 -m http.server 8000
-   ```
+- Open the `index.html` file in a web browser to start the simulation.
 
 4. **Explore the Code:**
 - Take a look at the JavaScript code in the `src` directory to understand the implementation of the neural network and the self-driving car logic.

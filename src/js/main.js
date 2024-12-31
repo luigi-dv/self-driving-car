@@ -12,7 +12,7 @@ const road=new Road(
     Settings.laneCount
 );
 
-let registry=null;
+const registry=new PolicyRegistry(HighwayPolicies);
 let profile=PolicyProfile.none();
 let orchestrator=null;
 let cars=[];
@@ -25,14 +25,7 @@ let recordDistance=0;
 let mutationAmount=
     parseFloat(localStorage.getItem("mutationAmount"))||0.1;
 
-PolicyRegistry.load(Settings.policyUrl)
-    .then(loaded=>{
-        registry=loaded;
-    })
-    .catch(error=>{
-        setStatus("Policies not loaded, serve the folder over http");
-    })
-    .finally(start);
+start();
 
 function start(){
     setupRegions();
@@ -55,10 +48,6 @@ function start(){
 
 function setupRegions(){
     const input=document.getElementById("regionInput");
-    if(registry==null){
-        input.disabled=true;
-        return;
-    }
     for(let i=0;i<registry.profiles.length;i++){
         const option=document.createElement("option");
         option.value=registry.profiles[i].name;

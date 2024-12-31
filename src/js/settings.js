@@ -4,7 +4,6 @@ const Settings={
     laneCount:3,
     laneWidth:60,
     region:"EU_STRICT",
-    policyUrl:"src/config/av_highway_policies.yaml",
     speedLimitKmh:100,
     seedBaselineBrain:true,
 
