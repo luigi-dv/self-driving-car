@@ -50,8 +50,11 @@ class Road{
     }
 
     draw(ctx){
-        ctx.lineWidth=5;
-        ctx.strokeStyle="white";
+        ctx.fillStyle=Theme.road;
+        ctx.fillRect(this.left,this.top,this.right-this.left,this.bottom-this.top);
+
+        ctx.lineWidth=Theme.lineWidth;
+        ctx.strokeStyle=Theme.laneMark;
 
         for(let i=1;i<=this.laneCount-1;i++){
             const x=lerp(
@@ -68,6 +71,7 @@ class Road{
         }
 
         ctx.setLineDash([]);
+        ctx.strokeStyle=Theme.roadEdge;
         this.borders.forEach(border=>{
             ctx.beginPath();
             ctx.moveTo(border[0].x,border[0].y);

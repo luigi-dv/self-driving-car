@@ -33,15 +33,15 @@ class ClosureFeature extends RoadFeature{
 
     draw(ctx,road){
         ctx.setLineDash([]);
-        ctx.fillStyle="rgba(255,140,0,0.3)";
+        ctx.fillStyle=Theme.closureFill;
         ctx.fillRect(this.left,this.y-this.length,
             this.right-this.left,this.length);
-        ctx.lineWidth=3;
-        ctx.strokeStyle="orangered";
+        ctx.lineWidth=Theme.lineWidth;
+        ctx.strokeStyle=Theme.closureEdge;
         ctx.strokeRect(this.left,this.y-this.length,
             this.right-this.left,this.length);
 
-        ctx.fillStyle="orangered";
+        ctx.fillStyle=Theme.closureCone;
         for(let i=1;i<=5;i++){
             ctx.beginPath();
             ctx.arc(

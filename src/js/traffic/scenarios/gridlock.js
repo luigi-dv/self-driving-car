@@ -52,7 +52,7 @@ class GridlockScenario extends Scenario{
                 focusY+Settings.traffic.lookBehind-100,
                 1.2,
                 new EmergencyRunTechnique(1500),
-                {width:36,color:"white"}
+                {width:36,color:Theme.trafficSpecial}
             );
         }
     }

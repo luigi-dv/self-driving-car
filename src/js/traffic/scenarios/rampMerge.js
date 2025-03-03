@@ -8,21 +8,31 @@ class RampFeature extends RoadFeature{
         const inner=(road.laneToX(0)+road.laneToX(-1))/2;
         const outer=2*road.laneToX(-1)-inner;
 
-        ctx.lineWidth=5;
-        ctx.strokeStyle="lightgray";
+        ctx.fillStyle=Theme.rampSurface;
+        ctx.beginPath();
+        ctx.moveTo(inner,this.startY);
+        ctx.lineTo(outer,this.startY+200);
+        ctx.lineTo(outer,this.endY+80);
+        ctx.lineTo(inner,this.endY);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.lineWidth=Theme.lineWidth;
+        ctx.strokeStyle=Theme.rampEdge;
         ctx.setLineDash([]);
         ctx.beginPath();
         ctx.moveTo(inner,this.startY);
         ctx.lineTo(inner,this.endY);
         ctx.stroke();
 
-        ctx.strokeStyle="white";
+        ctx.strokeStyle=Theme.rampDivider;
         ctx.setLineDash([10,10]);
         ctx.beginPath();
         ctx.moveTo(inner,this.startY);
         ctx.lineTo(inner,this.endY);
         ctx.stroke();
 
+        ctx.strokeStyle=Theme.rampEdge;
         ctx.setLineDash([]);
         ctx.beginPath();
         ctx.moveTo(outer,this.startY+200);

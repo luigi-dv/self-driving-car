@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Neuronal Network | Self Car Driving</title>
-    <meta name="description" content="Neuronal Network that is applied in a self driving car animation. Created by Ldvloper">
-    <meta name="subject" content="Self Car Driving | Neuronal Network">
-    <meta name="keywords" content="Javascript, Neuronal Network, Automatización, Self Learning"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Self-driving car | Neural network</title>
+    <meta name="description" content="Neural network that is applied in a self driving car animation. Created by Ldvloper">
+    <meta name="subject" content="Self Car Driving | Neural Network">
+    <meta name="keywords" content="Javascript, Neural Network, Automatización, Self Learning"/>
     <meta name="author" content="Luigelo Davila">
 
     <!-- ==============================================
@@ -25,78 +26,167 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileColor" content="#121413">
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#121413">
 
     <!-- ==============================================
     Social
   =============================================== -->
-    <meta property='og:title' content='Self Car Driving | Neuronal Network'/>
+    <meta property='og:title' content='Self Car Driving | Neural Network'/>
     <meta property='og:image' content="http://self-driving-car.neuronalnetwork.ldvloper.com/social-preview.png"/>
     <meta property="og:image:secure_url" content="https://self-driving-car.neuronalnetwork.ldvloper.com/social-preview.png" />
     <meta property="og:image:type" content="image/png" />
-    <meta property='og:description' content='Neuronal Network that is applied in a self driving car animation. Created by Ldvloper'/>
+    <meta property='og:description' content='Neural network that is applied in a self driving car animation. Created by Ldvloper'/>
     <meta property='og:url' content='https://self-driving-car.neuronalnetwork.ldvloper.com'/>
     <!--Style-->
     <link rel="stylesheet" href="src/css/style.css">
 </head>
 <body>
-    <canvas id="myCanvas"></canvas>
-    <div id="panel">
-    <div id="verticalButtons">
-        <button onclick="save()" title="Save the best brain">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 12px; width: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-            </svg>
-        </button>
-        <button onclick="discard()" title="Discard the saved brain and start over">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 12px; width: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
-            </svg>
-        </button>
-        <button id="restoreButton" onclick="restore()" title="Restore the discarded brain">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 12px; width: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-            </svg>
-        </button>
-        <button onclick="nextGeneration()" title="Skip to the next generation">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 12px; width: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
-            </svg>
-        </button>
-        <button onclick="exportBrain()" title="Export the best brain to a file">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 12px; width: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-        </button>
-        <button onclick="document.getElementById('importInput').click()" title="Import a brain from a file">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 12px; width: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-        </button>
+<main>
+
+<section class="hero" aria-labelledby="pageName">
+  <h1 id="pageName" class="name">Self-driving car</h1>
+  <p class="pitch">A hundred cars learning one country's motorway rules.</p>
+
+  <div class="road" data-ui>
+    <canvas id="myCanvas" role="img" aria-label="The motorway seen from above. The camera follows the best car of this generation."></canvas>
+  </div>
+
+  <div class="pick">
+    <h2 class="vh" id="pickTitle">Driving rules</h2>
+    <div id="regionInput" role="radiogroup" aria-labelledby="pickTitle"></div>
+  </div>
+
+  <dl class="readouts">
+    <div><dt>Generation</dt><dd id="generationStat"></dd></div>
+    <div><dt>Alive</dt><dd id="aliveStat"></dd></div>
+    <div><dt>Distance</dt><dd id="distanceStat"></dd></div>
+    <div><dt>Record</dt><dd id="recordStat"></dd></div>
+    <div><dt>Fitness</dt><dd id="fitnessStat"></dd></div>
+    <div><dt>Rules broken</dt><dd id="violationStat"></dd></div>
+    <div class="wide"><dt>On the road now</dt><dd id="scenario"></dd></div>
+  </dl>
+
+  <div class="time" id="timeControls" role="group" aria-label="Simulation time">
+    <button class="act" id="pauseButton" aria-pressed="false" onclick="togglePause()">Pause</button>
+    <button class="plain" id="stepButton" onclick="stepOnce()" disabled>Step one frame</button>
+    <div class="speeds" id="speedGroup" role="group" aria-label="Speed">
+      <button class="plain lamp" id="speed1Button" aria-pressed="true" onclick="setSpeed(1)">1×</button>
+      <button class="plain lamp" id="speed4Button" aria-pressed="false" onclick="setSpeed(4)">4×</button>
+      <button class="plain lamp" id="speed16Button" aria-pressed="false" onclick="setSpeed(16)">16×</button>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+  </div>
+
+  <div class="gantry" data-ui>
+    <h2 class="vh">What the rules ask of the best car</h2>
+    <p class="ask"><span class="soft">The rules ask for the</span> <span id="whyLane"></span> <span class="soft">at</span> <span id="whySpeed"></span><span class="soft">. The car is doing</span> <span id="whySpeedNow"></span><span class="soft">.</span></p>
+    <div class="heads" id="whyLaneMap" aria-hidden="true"></div>
+    <div class="under" id="whyHere" aria-hidden="true"></div>
+    <ul class="why" id="whyReasons"></ul>
+    <p class="broke" id="violationLine" hidden><span id="violation"></span> <span class="soft"><span id="violationRule"></span>, <span id="violationSeverity"></span>.</span></p>
+    <p class="why soft" id="violationEmpty">The best car has broken no rule yet.</p>
+    <p class="vh" id="directive"></p>
+  </div>
+
+  <figure class="net">
+    <div class="net-well"><canvas id="networkCanvas" role="img" aria-label="The best car's neural network as a graph: 8 inputs at the bottom, the hidden layer in the middle, 4 steering outputs at the top"></canvas></div>
+    <figcaption class="net-note">The best car's network, live. Sensors and guidance come in at the bottom, steering goes out at the top, and a lit node is one that fired.</figcaption>
+  </figure>
+</section>
+
+<section class="row" aria-labelledby="planTitle">
+  <h2 id="planTitle">What the road tests</h2>
+  <ol id="scenarioList" class="plan"></ol>
+</section>
+
+<section class="row" aria-labelledby="learnTitle">
+  <h2 id="learnTitle">How they learn</h2>
+  <div>
+    <div class="step">
+      <p>A hundred copies drive until they crash, stall or run out of time.</p>
+      <p class="soft"><span id="frameStat"></span> frames driven</p>
+      <div class="meter"><span id="frameBar"></span></div>
+      <div class="acts">
+        <button class="quiet" id="nextButton" onclick="nextGeneration()">End this generation now</button>
+      </div>
+    </div>
+
+    <div class="step">
+      <p>The one that got furthest without breaking rules is kept.</p>
+      <p class="soft">Saved brain: <span id="savedStat"></span></p>
+      <div class="acts">
+        <button class="quiet" id="saveButton" onclick="save()">Save this brain</button>
+        <button class="quiet" id="discardButton" onclick="discard()">Discard and start over</button>
+        <button class="quiet" id="restoreButton" onclick="restore()" disabled>Bring it back</button>
+        <button class="quiet" id="exportButton" onclick="exportBrain()">Export</button>
+        <button class="quiet" id="importButton" onclick="document.getElementById('importInput').click()">Import</button>
         <input id="importInput" type="file" accept=".json,application/json" onchange="importBrain(this)" hidden>
+      </div>
     </div>
-    <div id="stats">
-        <select id="regionInput" onchange="setRegion(this.value)" title="Regional driving policy"></select>
-        <div>Generation <b id="generationStat"></b></div>
-        <div>Alive <b id="aliveStat"></b></div>
-        <div>Distance <b id="distanceStat"></b></div>
-        <div>Record <b id="recordStat"></b></div>
-        <div>Fitness <b id="fitnessStat"></b></div>
-        <div>Violations <b id="violationStat"></b></div>
-        <div>Saved <b id="savedStat"></b></div>
-        <div>Mutation <b id="mutationStat"></b></div>
-        <input id="mutationInput" type="range" min="0.01" max="0.5" step="0.01" oninput="setMutation(this.value)" title="Mutation amount for the next generation">
-        <p id="status"></p>
-        <p id="scenario"></p>
-        <p id="directive"></p>
-        <p id="violation"></p>
+
+    <div class="step">
+      <p>Every car that follows gets a copy, changed a little.</p>
+      <div class="field">
+        <label for="mutationInput">How much each copy changes</label>
+        <input id="mutationInput" type="range" min="0.01" max="0.5" step="0.01" value="0.1" oninput="setMutation(this.value)">
+        <output id="mutationStat" for="mutationInput">10%</output>
+      </div>
     </div>
+  </div>
+  <div class="chart">
+    <div class="chart-well">
+      <canvas id="fitnessChart" role="img" aria-label="Fitness chart, no generation has ended yet" hidden></canvas>
+      <p id="fitnessEmpty" class="soft">The chart starts when the first generation ends.</p>
     </div>
+    <p class="chart-key"><span><i></i>best car</span><span class="avg"><i></i>average of all hundred</span></p>
+  </div>
+</section>
+
+<section class="row" aria-labelledby="modelTitle">
+  <h2 id="modelTitle">The model</h2>
+  <div>
+    <p class="says">Each car is steered by <b><span id="modelParams">82</span> numbers</b>: <b>8 inputs</b>, <b><span id="modelHidden">6</span> hidden neurons</b> and <b>4 outputs</b>. <b>100 copies</b> drive each generation, for <b>7,200 frames</b> at most.</p>
+    <div class="remake">
+      <div class="field">
+        <label for="neuronsInput">Hidden neurons</label>
+        <input id="neuronsInput" type="range" min="4" max="12" step="1" value="6" oninput="previewNetwork()">
+        <output id="neuronsStat" for="neuronsInput">6</output>
+      </div>
+      <div class="field">
+        <label for="activationInput">Activation</label>
+        <select id="activationInput" onchange="previewNetwork()">
+          <option value="step" selected>step</option><option value="sigmoid">sigmoid</option><option value="tanh">tanh</option><option value="relu">relu</option>
+        </select>
+      </div>
+      <button class="quiet" id="networkApply" onclick="applyNetwork()" disabled>Restart with this network</button>
+      <p id="networkHint">A different network starts training again from generation 1. The saved brain stays saved, but will not fit.</p>
+    </div>
+  </div>
+</section>
+
+<section class="row rules" aria-labelledby="rulesTitle">
+  <h2 id="rulesTitle">The rules in force</h2>
+  <div>
+    <p><span id="policyName"></span>, <span id="policyHandedness"></span>, as in <span id="policyRegions"></span>.</p>
+    <table>
+      <tbody id="policyRules"></tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer class="close">
+  <span>A learning traffic simulation, built by Ldvloper</span>
+  <a href="https://github.com/luigi-dv/self-driving-car" rel="noopener">Source on GitHub</a>
+</footer>
+
     <!--Scripts-->
-    <canvas id="networkCanvas"></canvas>
     <script src="src/js/settings.js"></script>
+    <script src="src/js/ui/theme.js"></script>
+    <script src="src/js/ui/copy.js"></script>
     <script src="src/js/visualizer.js"></script>
     <script src="src/js/network.js"></script>
     <script src="src/js/storage.js"></script>
@@ -139,6 +229,10 @@
     <script src="src/js/policy/rules/sustainedBlinker.js"></script>
     <script src="src/js/policy/rules/hazardDeceleration.js"></script>
     <script src="src/js/policy/rules/courtesyHazards.js"></script>
+    <script src="src/js/ui/sizing.js"></script>
+    <script src="src/js/ui/history.js"></script>
+    <script src="src/js/ui/chart.js"></script>
+    <script src="src/js/ui/panels.js"></script>
     <script src="src/js/main.js"></script>
 </body>
 </html>

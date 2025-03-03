@@ -59,14 +59,23 @@ function polysIntersect(poly1, poly2){
 }
 
 function getRGBA(value){
-    const alpha=Math.abs(value);
-    const R=value<0?0:255;
-    const G=R;
-    const B=value>0?0:255;
-    return "rgba("+R+","+G+","+B+","+alpha+")";
+    if(value==0){
+        return "rgba(0,0,0,0)";
+    }
+    const alpha=Math.min(1,Math.abs(value));
+    const rgb=value>0?Theme.weightPositive:Theme.weightNegative;
+    return "rgba("+rgb[0]+","+rgb[1]+","+rgb[2]+","+alpha+")";
+}
+
+function getInputRGBA(value){
+    if(value==0){
+        return "rgba(0,0,0,0)";
+    }
+    const alpha=Math.min(1,Math.abs(value));
+    const rgb=value>0?Theme.inputPositive:Theme.weightNegative;
+    return "rgba("+rgb[0]+","+rgb[1]+","+rgb[2]+","+alpha+")";
 }
 
 function getRandomColor(){
-    const hue=290+Math.random()*260;
-    return "hsl("+hue+", 100%, 60%)";
+    return Theme.traffic[Math.floor(Math.random()*Theme.traffic.length)];
 }

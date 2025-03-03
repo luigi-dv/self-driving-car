@@ -14,7 +14,7 @@ class EmergencyStopScenario extends Scenario{
         traffic.spawn(
             -1,originY-200,0,
             new StoppedEmergencyTechnique(),
-            {color:"white"}
+            {color:Theme.trafficSpecial}
         );
         if(traffic.road.laneCount>1){
             traffic.spawn(1,originY+150,2.1);

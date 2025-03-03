@@ -3,6 +3,10 @@ class Car{
     static hiddenActivation="step";
     static guidanceCount=3;
 
+    static img=null;
+    static imgLoaded=false;
+    static sprites={};
+
     constructor(x,y,width,height,controlType,maxSpeed=3,color="blue"){
         this.x=x;
         this.y=y;
@@ -41,21 +45,14 @@ class Car{
         }
         this.controls=new Controls(controlType);
 
-        this.img=new Image();
-        this.img.src="src/assets/img/car.png"
+        this.color=color;
 
-        this.mask=document.createElement("canvas");
-        this.mask.width=width;
-        this.mask.height=height;
-
-        const maskCtx=this.mask.getContext("2d");
-        this.img.onload=()=>{
-            maskCtx.fillStyle=color;
-            maskCtx.rect(0,0,this.width,this.height);
-            maskCtx.fill();
-
-            maskCtx.globalCompositeOperation="destination-atop";
-            maskCtx.drawImage(this.img,0,0,this.width,this.height);
+        if(!Car.img){
+            Car.img=new Image();
+            Car.img.src="src/assets/img/car.png";
+            Car.img.onload=()=>{
+                Car.imgLoaded=true;
+            }
         }
     }
 
@@ -163,26 +160,74 @@ class Car{
             this.sensor.draw(ctx);
         }
 
+        if(drawSensor && !this.damaged && this.polygon){
+            ctx.beginPath();
+            ctx.moveTo(this.polygon[0].x,this.polygon[0].y);
+            for(let i=1;i<this.polygon.length;i++){
+                ctx.lineTo(this.polygon[i].x,this.polygon[i].y);
+            }
+            ctx.closePath();
+            ctx.lineWidth=1.5;
+            ctx.strokeStyle=Theme.carBest;
+            ctx.stroke();
+        }
+
         ctx.save();
         ctx.translate(this.x,this.y);
         ctx.rotate(-this.angle);
-        if(!this.damaged){
-            ctx.drawImage(this.mask,
+        const sprite=Car.#getSprite(
+            this.#getTint(drawSensor),this.width,this.height
+        );
+        if(sprite){
+            ctx.drawImage(sprite,
                 -this.width/2,
                 -this.height/2,
                 this.width,
                 this.height);
-            ctx.globalCompositeOperation="multiply";
         }
-        ctx.drawImage(this.img,
-            -this.width/2,
-            -this.height/2,
-            this.width,
-            this.height);
-        ctx.globalCompositeOperation="source-over";
         this.#drawSignals(ctx);
         ctx.restore();
 
+    }
+
+    // How see-through a car is drawn is up to the caller
+    #getTint(drawSensor){
+        if(this.damaged){
+            return Theme.carDamaged;
+        }
+        if(drawSensor){
+            return Theme.carBest;
+        }
+        return this.useBrain?Theme.carLearning:this.color;
+    }
+
+    // The artwork is a blue car. Each colour gets its own copy, made
+    // once: the shading of the artwork in grey, multiplied by the colour
+    static #getSprite(color,width,height){
+        if(!Car.imgLoaded){
+            return null;
+        }
+
+        const key=color+"|"+width+"|"+height;
+        if(!Car.sprites[key]){
+            const sprite=document.createElement("canvas");
+            sprite.width=width;
+            sprite.height=height;
+
+            const spriteCtx=sprite.getContext("2d");
+            spriteCtx.filter="grayscale(1) brightness(2.2)";
+            spriteCtx.drawImage(Car.img,0,0,width,height);
+            spriteCtx.filter="none";
+
+            spriteCtx.globalCompositeOperation="multiply";
+            spriteCtx.fillStyle=color;
+            spriteCtx.fillRect(0,0,width,height);
+
+            spriteCtx.globalCompositeOperation="destination-in";
+            spriteCtx.drawImage(Car.img,0,0,width,height);
+            Car.sprites[key]=sprite;
+        }
+        return Car.sprites[key];
     }
 
     #drawSignals(ctx){
@@ -195,20 +240,20 @@ class Car{
         };
 
         if(this.signals.flashing){
-            light(-6,-6,blink?"blue":"red");
-            light(6,-6,blink?"red":"blue");
+            light(-6,-6,blink?Theme.lampEmergencyB:Theme.lampEmergencyA);
+            light(6,-6,blink?Theme.lampEmergencyA:Theme.lampEmergencyB);
         }
         if(this.signals.highBeam && blink){
-            light(-w+5,-h,"white");
-            light(w-5,-h,"white");
+            light(-w+5,-h,Theme.lampHighBeam);
+            light(w-5,-h,Theme.lampHighBeam);
         }
         if(blink && (this.signals.hazards || this.signals.blinker<0)){
-            light(-w+2,-h+4,"orange");
-            light(-w+2,h-4,"orange");
+            light(-w+2,-h+4,Theme.lampSignal);
+            light(-w+2,h-4,Theme.lampSignal);
         }
         if(blink && (this.signals.hazards || this.signals.blinker>0)){
-            light(w-2,-h+4,"orange");
-            light(w-2,h-4,"orange");
+            light(w-2,-h+4,Theme.lampSignal);
+            light(w-2,h-4,Theme.lampSignal);
         }
     }
 }

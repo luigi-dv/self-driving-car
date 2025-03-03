@@ -1,12 +1,22 @@
 class Visualizer{
     static drawNetwork(ctx,network){
-        const margin=50;
+        ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+
+        const margin=clamp(ctx.canvas.width*0.08,24,50);
         const left=margin;
         const top=margin;
         const width=ctx.canvas.width-margin*2;
         const height=ctx.canvas.height-margin*2;
 
         const levelHeight=height/network.levels.length;
+
+        // One radius for every row, set by the widest one
+        const widest=Math.max(...network.levels.map(
+            level=>Math.max(level.inputs.length,level.outputs.length)
+        ));
+        const nodeRadius=clamp(
+            (widest>1?width/(widest-1):width)*0.4,8,18
+        );
 
         for(let i=network.levels.length-1;i>=0;i--){
             const levelTop=top+
@@ -24,12 +34,14 @@ class Visualizer{
                 width,levelHeight,
                 i===network.levels.length-1
                     ?['↑','←','→','↓']
-                    :[]
+                    :[],
+                nodeRadius,
+                i===0
             );
         }
     }
 
-    static drawLevel(ctx,level,left,top,width,height,outputLabels){
+    static drawLevel(ctx,level,left,top,width,height,outputLabels,nodeRadius,isInputLevel){
         const right=left+width;
         const bottom=top+height;
 
@@ -52,16 +64,21 @@ class Visualizer{
             }
         }
 
-        const nodeRadius=18;
         for(let i=0;i<inputs.length;i++){
             const x=Visualizer.#getNodeX(inputs,i,left,right);
             ctx.beginPath();
             ctx.arc(x,bottom,nodeRadius,0,Math.PI*2);
-            ctx.fillStyle="black";
+            ctx.fillStyle=Theme.nodeFill;
             ctx.fill();
+            ctx.lineWidth=1.5;
+            ctx.strokeStyle=Theme.nodeRing;
+            ctx.setLineDash([]);
+            ctx.stroke();
             ctx.beginPath();
             ctx.arc(x,bottom,nodeRadius*0.6,0,Math.PI*2);
-            ctx.fillStyle=getRGBA(inputs[i]);
+            ctx.fillStyle=isInputLevel
+                ?getInputRGBA(inputs[i])
+                :getRGBA(inputs[i]);
             ctx.fill();
         }
 
@@ -69,8 +86,12 @@ class Visualizer{
             const x=Visualizer.#getNodeX(outputs,i,left,right);
             ctx.beginPath();
             ctx.arc(x,top,nodeRadius,0,Math.PI*2);
-            ctx.fillStyle="black";
+            ctx.fillStyle=Theme.nodeFill;
             ctx.fill();
+            ctx.lineWidth=1.5;
+            ctx.strokeStyle=Theme.nodeRing;
+            ctx.setLineDash([]);
+            ctx.stroke();
             ctx.beginPath();
             ctx.arc(x,top,nodeRadius*0.6,0,Math.PI*2);
             ctx.fillStyle=getRGBA(outputs[i]);
@@ -88,12 +109,9 @@ class Visualizer{
                 ctx.beginPath();
                 ctx.textAlign="center";
                 ctx.textBaseline="middle";
-                ctx.fillStyle="black";
-                ctx.strokeStyle="white";
-                ctx.font=(nodeRadius*1.5)+"px Arial";
+                ctx.fillStyle=Theme.outputLabel;
+                ctx.font="600 "+Math.round(nodeRadius*1.1)+"px "+Theme.font;
                 ctx.fillText(outputLabels[i],x,top+nodeRadius*0.1);
-                ctx.lineWidth=0.5;
-                ctx.strokeText(outputLabels[i],x,top+nodeRadius*0.1);
             }
         }
     }
