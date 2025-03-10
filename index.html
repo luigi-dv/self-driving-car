@@ -46,7 +46,13 @@
 <main>
 
 <section class="hero" aria-labelledby="pageName">
-  <h1 id="pageName" class="name">Self-driving car</h1>
+  <div class="name">
+    <h1 id="pageName">Self-driving car</h1>
+    <div class="views" role="radiogroup" aria-label="View">
+      <button class="plain lamp" id="viewGeneral" role="radio" aria-checked="true" onclick="setView('general')">Overview</button>
+      <button class="plain lamp" id="viewTechnical" role="radio" aria-checked="false" onclick="setView('technical')">Technical</button>
+    </div>
+  </div>
   <p class="pitch">A hundred cars learning one country's motorway rules.</p>
 
   <div class="road" data-ui>
@@ -58,19 +64,17 @@
     <div id="regionInput" role="radiogroup" aria-labelledby="pickTitle"></div>
   </div>
 
-  <dl class="readouts">
-    <div><dt>Generation</dt><dd id="generationStat"></dd></div>
+  <dl class="readouts tech">
     <div><dt>Alive</dt><dd id="aliveStat"></dd></div>
     <div><dt>Distance</dt><dd id="distanceStat"></dd></div>
     <div><dt>Record</dt><dd id="recordStat"></dd></div>
-    <div><dt>Fitness</dt><dd id="fitnessStat"></dd></div>
     <div><dt>Rules broken</dt><dd id="violationStat"></dd></div>
-    <div class="wide"><dt>On the road now</dt><dd id="scenario"></dd></div>
+    <div><dt>Frame</dt><dd id="frameStat"></dd></div>
   </dl>
 
   <div class="time" id="timeControls" role="group" aria-label="Simulation time">
     <button class="act" id="pauseButton" aria-pressed="false" onclick="togglePause()">Pause</button>
-    <button class="plain" id="stepButton" onclick="stepOnce()" disabled>Step one frame</button>
+    <button class="plain" id="stepButton" onclick="stepOnce()" disabled>Step</button>
     <div class="speeds" id="speedGroup" role="group" aria-label="Speed">
       <button class="plain lamp" id="speed1Button" aria-pressed="true" onclick="setSpeed(1)">1×</button>
       <button class="plain lamp" id="speed4Button" aria-pressed="false" onclick="setSpeed(4)">4×</button>
@@ -81,73 +85,41 @@
 
   <div class="gantry" data-ui>
     <h2 class="vh">What the rules ask of the best car</h2>
-    <p class="ask"><span class="soft">The rules ask for the</span> <span id="whyLane"></span> <span class="soft">at</span> <span id="whySpeed"></span><span class="soft">. The car is doing</span> <span id="whySpeedNow"></span><span class="soft">.</span></p>
-    <div class="heads" id="whyLaneMap" aria-hidden="true"></div>
-    <div class="under" id="whyHere" aria-hidden="true"></div>
-    <ul class="why" id="whyReasons"></ul>
-    <p class="broke" id="violationLine" hidden><span id="violation"></span> <span class="soft"><span id="violationRule"></span>, <span id="violationSeverity"></span>.</span></p>
-    <p class="why soft" id="violationEmpty">The best car has broken no rule yet.</p>
+    <p class="ask"><span class="soft">The rules ask for the</span> <span id="whyLane"></span> <span class="soft">at</span> <span id="whySpeed"></span><span class="soft">.</span><span class="tech"> <span class="soft">The car is doing</span> <span id="whySpeedNow"></span><span class="soft">.</span></span></p>
+    <div class="tech">
+      <div class="heads" id="whyLaneMap" aria-hidden="true"></div>
+      <div class="under" id="whyHere" aria-hidden="true"></div>
+      <ul class="why" id="whyReasons"></ul>
+      <p class="broke" id="violationLine" hidden><span id="violation"></span> <span class="soft"><span id="violationRule"></span>, <span id="violationSeverity"></span>.</span></p>
+    </div>
     <p class="vh" id="directive"></p>
   </div>
 
-  <figure class="net">
+  <div class="history" data-ui>
+    <h2 class="vh">Generations</h2>
+    <div class="heading tech" aria-hidden="true"><span></span><span></span><span>best</span><span>average</span><span>alive</span><span>broken</span></div>
+    <ol class="line" id="historyLine">
+      <li class="is-now">
+        <span class="gen" id="generationStat"></span>
+        <span class="bar"><i id="fitnessBar"></i></span>
+        <span class="num" id="fitnessStat"></span>
+        <span class="num tech"></span>
+        <span class="num tech" id="aliveNow"></span>
+        <span class="num tech" id="brokenNow"></span>
+        <span class="drive">
+          <span class="stops" id="scenarioStops" aria-hidden="true"></span>
+          <span id="scenario"></span>
+        </span>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="row tech" aria-labelledby="netTitle">
+  <h2 id="netTitle">Network</h2>
+  <div>
     <div class="net-well"><canvas id="networkCanvas" role="img" aria-label="The best car's neural network as a graph: 8 inputs at the bottom, the hidden layer in the middle, 4 steering outputs at the top"></canvas></div>
-    <figcaption class="net-note">The best car's network, live. Sensors and guidance come in at the bottom, steering goes out at the top, and a lit node is one that fired.</figcaption>
-  </figure>
-</section>
-
-<section class="row" aria-labelledby="planTitle">
-  <h2 id="planTitle">What the road tests</h2>
-  <ol id="scenarioList" class="plan"></ol>
-</section>
-
-<section class="row" aria-labelledby="learnTitle">
-  <h2 id="learnTitle">How they learn</h2>
-  <div>
-    <div class="step">
-      <p>A hundred copies drive until they crash, stall or run out of time.</p>
-      <p class="soft"><span id="frameStat"></span> frames driven</p>
-      <div class="meter"><span id="frameBar"></span></div>
-      <div class="acts">
-        <button class="quiet" id="nextButton" onclick="nextGeneration()">End this generation now</button>
-      </div>
-    </div>
-
-    <div class="step">
-      <p>The one that got furthest without breaking rules is kept.</p>
-      <p class="soft">Saved brain: <span id="savedStat"></span></p>
-      <div class="acts">
-        <button class="quiet" id="saveButton" onclick="save()">Save this brain</button>
-        <button class="quiet" id="discardButton" onclick="discard()">Discard and start over</button>
-        <button class="quiet" id="restoreButton" onclick="restore()" disabled>Bring it back</button>
-        <button class="quiet" id="exportButton" onclick="exportBrain()">Export</button>
-        <button class="quiet" id="importButton" onclick="document.getElementById('importInput').click()">Import</button>
-        <input id="importInput" type="file" accept=".json,application/json" onchange="importBrain(this)" hidden>
-      </div>
-    </div>
-
-    <div class="step">
-      <p>Every car that follows gets a copy, changed a little.</p>
-      <div class="field">
-        <label for="mutationInput">How much each copy changes</label>
-        <input id="mutationInput" type="range" min="0.01" max="0.5" step="0.01" value="0.1" oninput="setMutation(this.value)">
-        <output id="mutationStat" for="mutationInput">10%</output>
-      </div>
-    </div>
-  </div>
-  <div class="chart">
-    <div class="chart-well">
-      <canvas id="fitnessChart" role="img" aria-label="Fitness chart, no generation has ended yet" hidden></canvas>
-      <p id="fitnessEmpty" class="soft">The chart starts when the first generation ends.</p>
-    </div>
-    <p class="chart-key"><span><i></i>best car</span><span class="avg"><i></i>average of all hundred</span></p>
-  </div>
-</section>
-
-<section class="row" aria-labelledby="modelTitle">
-  <h2 id="modelTitle">The model</h2>
-  <div>
-    <p class="says">Each car is steered by <b><span id="modelParams">82</span> numbers</b>: <b>8 inputs</b>, <b><span id="modelHidden">6</span> hidden neurons</b> and <b>4 outputs</b>. <b>100 copies</b> drive each generation, for <b>7,200 frames</b> at most.</p>
+    <p class="says"><b><span id="modelParams">82</span> numbers</b>: <b>8 inputs</b>, <b><span id="modelHidden">6</span> hidden</b>, <b>4 outputs</b>.</p>
     <div class="remake">
       <div class="field">
         <label for="neuronsInput">Hidden neurons</label>
@@ -161,15 +133,41 @@
         </select>
       </div>
       <button class="quiet" id="networkApply" onclick="applyNetwork()" disabled>Restart with this network</button>
-      <p id="networkHint">A different network starts training again from generation 1. The saved brain stays saved, but will not fit.</p>
+      <p id="networkHint"></p>
     </div>
   </div>
 </section>
 
-<section class="row rules" aria-labelledby="rulesTitle">
-  <h2 id="rulesTitle">The rules in force</h2>
+<section class="row tech" aria-labelledby="brainTitle">
+  <h2 id="brainTitle">Brain</h2>
   <div>
-    <p><span id="policyName"></span>, <span id="policyHandedness"></span>, as in <span id="policyRegions"></span>.</p>
+    <p><span class="soft">Saved:</span> <span id="savedStat"></span></p>
+    <div class="acts">
+      <button class="quiet" id="saveButton" onclick="save()">Save</button>
+      <button class="quiet" id="discardButton" onclick="discard()">Discard and restart</button>
+      <button class="quiet" id="restoreButton" onclick="restore()" disabled>Bring back</button>
+      <button class="quiet" id="exportButton" onclick="exportBrain()">Export</button>
+      <button class="quiet" id="importButton" onclick="document.getElementById('importInput').click()">Import</button>
+      <input id="importInput" type="file" accept=".json,application/json" onchange="importBrain(this)" hidden>
+      <button class="quiet" id="nextButton" onclick="nextGeneration()">End generation</button>
+    </div>
+    <div class="field">
+      <label for="mutationInput">Mutation</label>
+      <input id="mutationInput" type="range" min="0.01" max="0.5" step="0.01" value="0.1" oninput="setMutation(this.value)">
+      <output id="mutationStat" for="mutationInput">10%</output>
+    </div>
+  </div>
+</section>
+
+<section class="row tech" aria-labelledby="planTitle">
+  <h2 id="planTitle">Scenarios</h2>
+  <ol id="scenarioList" class="plan"></ol>
+</section>
+
+<section class="row rules tech" aria-labelledby="rulesTitle">
+  <h2 id="rulesTitle">Rules</h2>
+  <div>
+    <p><span id="policyName"></span>, <span id="policyHandedness"></span>.</p>
     <table>
       <tbody id="policyRules"></tbody>
     </table>
@@ -179,8 +177,8 @@
 </main>
 
 <footer class="close">
-  <span>A learning traffic simulation, built by Ldvloper</span>
-  <a href="https://github.com/luigi-dv/self-driving-car" rel="noopener">Source on GitHub</a>
+  <span>Built by Ldvloper</span>
+  <a href="https://github.com/luigi-dv/self-driving-car" rel="noopener">Source</a>
 </footer>
 
     <!--Scripts-->
@@ -231,7 +229,7 @@
     <script src="src/js/policy/rules/courtesyHazards.js"></script>
     <script src="src/js/ui/sizing.js"></script>
     <script src="src/js/ui/history.js"></script>
-    <script src="src/js/ui/chart.js"></script>
+    <script src="src/js/ui/timeline.js"></script>
     <script src="src/js/ui/panels.js"></script>
     <script src="src/js/main.js"></script>
 </body>

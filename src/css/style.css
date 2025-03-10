@@ -62,6 +62,9 @@ button:disabled{cursor:not-allowed;color:var(--muted)}
 .plain{color:var(--muted)}
 .plain:hover:not(:disabled),.plain[aria-checked="true"],.plain[aria-pressed="true"]{color:var(--ink)}
 
+/* the overview hides what only the technical view shows */
+html:not([data-view="technical"]) .tech{display:none!important}
+
 /* ---------- first screen ---------- */
 .hero{
   display:grid;grid-template-columns:repeat(7,minmax(0,1fr));
@@ -71,6 +74,8 @@ button:disabled{cursor:not-allowed;color:var(--muted)}
 }
 .hero > *{grid-row:1;padding-top:20px}
 .name{grid-column:1}
+.views{margin-top:1.5em}
+.views button{display:block}
 .pitch{grid-column:2;color:var(--muted)}
 .road{
   grid-column:3 / span 2;grid-row:1 / span 2;padding:0;
@@ -82,13 +87,12 @@ button:disabled{cursor:not-allowed;color:var(--muted)}
 .readouts{grid-column:6}
 .readouts div{display:flex;justify-content:space-between;gap:1em}
 .readouts dt{color:var(--muted)}
-.readouts .wide{display:block;margin-top:1.5em}
 .time{grid-column:7;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:0.5em}
 .time .speeds{display:flex;gap:1.1em;margin-top:0.25em}
 #status{color:var(--muted);min-height:1.5em;margin-top:1em}
 
 .gantry{grid-column:1 / span 2;grid-row:2;padding:0 0 var(--edge)}
-.net{grid-column:5 / span 3;grid-row:2;padding:0 0 var(--edge)}
+.history{grid-column:5 / span 3;grid-row:2;padding:0 0 var(--edge)}
 
 .ask{font-size:var(--step-lead);line-height:1.3;max-width:17em}
 .heads{display:flex;gap:4px;margin:24px 0 6px}
@@ -105,11 +109,42 @@ button:disabled{cursor:not-allowed;color:var(--muted)}
 .broke{margin-top:18px;max-width:26em;color:var(--stop)}
 .broke .soft{color:var(--muted)}
 
-.net-well{position:relative;aspect-ratio:3 / 2;max-height:38svh;width:100%}
-.net-well canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.net-note{color:var(--muted);margin-top:10px;max-width:34em}
+/* ---------- the history line: the generation driving now, then the finished ones ---------- */
+/* each entry draws the line down to the next one */
+.line li{position:relative}
+.line li:not(:last-child)::after{
+  content:"";position:absolute;left:3px;top:calc(3px + 0.75em);
+  width:2px;height:100%;background:var(--surface-2);
+}
+.line li,.heading{
+  display:grid;column-gap:var(--edge);align-items:center;
+  grid-template-columns:8px 2.4em minmax(0,1fr) 5em;
+  padding:3px 0;
+}
+[data-view="technical"] .line li,[data-view="technical"] .heading{
+  grid-template-columns:8px 2.4em minmax(0,1fr) 5em 5em 3.2em 3.6em;
+}
+.line li::before{content:"";width:8px;height:8px;background:var(--muted);position:relative;z-index:1}
+.line li.is-now::before{background:var(--accent)}
+.line li.is-now{padding-bottom:14px}
+.line .gen{color:var(--muted)}
+.line li.is-now .gen{color:var(--ink)}
+.line .num,.heading span{text-align:right}
+.line .num.tech,.heading{color:var(--muted)}
+.heading{font-size:var(--step-small)}
+.heading span:first-child{grid-column:1 / span 2}
+.bar{height:3px}
+.bar i{display:block;height:100%;width:0;background:var(--muted)}
+.line li.is-now .bar i{background:var(--ink)}
+.drive{grid-column:3 / -1;display:flex;align-items:center;gap:0.8em;color:var(--muted)}
+.stops{display:flex;gap:3px}
+.stops i{width:6px;height:6px;background:var(--surface-2)}
+.stops i.is-done{background:var(--muted)}
+.stops i.is-now{background:var(--accent)}
+html:not([data-view="technical"]) .line li:nth-child(n+10){display:none}
+html:not([data-view="technical"]) .line li:nth-child(9)::after{display:none}
 
-/* ---------- the sections: a name on the left, the content on the road's left edge ---------- */
+/* ---------- technical sections: a name on the left, the content on the road's left edge ---------- */
 .row{
   display:grid;grid-template-columns:repeat(7,minmax(0,1fr));
   column-gap:var(--edge);padding:0 var(--edge);
@@ -117,42 +152,34 @@ button:disabled{cursor:not-allowed;color:var(--muted)}
 }
 .row > h2{grid-column:1 / span 2}
 .row > div,.row > ol{grid-column:3 / span 4;min-width:0}
-.row p{max-width:40em}
 
-/* scenarios */
+.net-well{position:relative;aspect-ratio:2 / 1;max-height:360px;width:100%}
+.net-well canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.says{color:var(--muted);margin-top:14px}
+.says b{font-weight:400;color:var(--ink);white-space:nowrap}
+.remake{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;margin-top:10px}
+.remake .field{margin-top:0}
+#networkHint{flex:1 0 100%;color:var(--ink)}
+#networkHint:empty{display:none}
+
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.field{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:14px;color:var(--muted)}
+.field output{color:var(--ink);min-width:2.5em}
+
 .plan li{
   display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr) 4.5em;
-  column-gap:var(--edge);padding:5px 0;
+  column-gap:var(--edge);padding:3px 0;
 }
+.plan .what{padding-left:1.1em;text-indent:-1.1em}
 .plan .what::before{
   content:"";display:inline-block;width:0.5em;height:0.5em;
   margin-right:0.6em;background:transparent;vertical-align:0.08em;
 }
-.plan .what{padding-left:1.1em;text-indent:-1.1em}
 .plan .tests,.plan .state{color:var(--muted)}
 .plan .state{text-align:right}
 .plan li.is-done .what{color:var(--muted)}
 .plan li.is-now .what::before{background:var(--accent)}
 .plan li.is-now .state{color:var(--ink)}
-.plan .detail{display:none}
-.plan li.is-now .detail{
-  display:block;grid-column:1 / -1;color:var(--muted);
-  max-width:40em;padding:2px 0 10px 1.1em;
-}
-
-/* learning */
-.step + .step{margin-top:36px}
-.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.meter{height:4px;background:var(--surface);margin-top:8px;max-width:40em}
-.meter span{display:block;height:100%;width:0;background:var(--ink)}
-.field{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:10px;color:var(--muted)}
-.field output{color:var(--ink);min-width:2.5em}
-.row > .chart{grid-column:3 / span 5;margin-top:44px}
-.chart-well{position:relative;height:clamp(200px,30svh,280px)}
-.chart-well canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.chart-key{display:flex;gap:1.5em;color:var(--muted);font-size:var(--step-small);margin-top:8px}
-.chart-key i{display:inline-block;width:1.2em;height:2px;background:var(--ink);vertical-align:middle;margin-right:0.5em}
-.chart-key .avg i{background:var(--muted)}
 
 input[type=range]{
   -webkit-appearance:none;appearance:none;height:24px;width:200px;
@@ -171,16 +198,7 @@ select{
   background-repeat:no-repeat;background-position:right 0.8em center;background-size:0.65em;
 }
 
-/* model */
-.says{font-size:var(--step-lead);line-height:1.3;color:var(--muted)}
-.says b{font-weight:400;color:var(--ink);white-space:nowrap}
-.remake{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;margin-top:24px}
-.remake .field{margin-top:0}
-#networkHint{flex:1 0 100%;color:var(--muted)}
-#networkHint.is-pending{color:var(--ink)}
-
-/* rules */
-.rules table{width:100%;border-collapse:collapse;margin-top:14px}
+.rules table{width:100%;border-collapse:collapse;margin-top:10px}
 .rules th,.rules td{font-weight:400;text-align:left;padding:3px 0;vertical-align:top}
 .rules th{width:34%;padding-right:var(--edge)}
 .rules td.asks{color:var(--muted)}
@@ -207,10 +225,9 @@ select{
   .time .speeds{margin-top:0}
   #status{flex:1 0 100%;margin-top:0}
   .gantry{grid-column:1 / span 2;grid-row:4;padding-top:48px}
-  .net{grid-column:3 / span 2;grid-row:4;padding-top:48px}
-  .net-well{max-height:none}
+  .history{grid-column:3 / span 2;grid-row:4;padding-top:48px}
   .row{grid-template-columns:minmax(0,1fr)}
-  .row > h2,.row > div,.row > ol,.row > .chart{grid-column:1}
+  .row > h2,.row > div,.row > ol{grid-column:1}
   .row > h2{margin-bottom:14px}
 }
 
@@ -224,9 +241,11 @@ select{
   .road{grid-column:1 / span 2;grid-row:3;min-height:0;height:56svh;margin:0 calc(-1 * var(--edge))}
   .pick{grid-column:1;grid-row:4;padding-top:28px}
   .readouts{grid-column:2;grid-row:4;padding-top:28px}
-  .gantry{grid-column:1 / span 2;grid-row:5;padding-top:56px}
-  .net{grid-column:1 / span 2;grid-row:6;padding-top:56px}
-  .net-well{aspect-ratio:4 / 3}
+  .gantry{grid-column:1 / span 2;grid-row:5;padding-top:48px}
+  .history{grid-column:1 / span 2;grid-row:6;padding-top:48px}
+  [data-view="technical"] .line li,[data-view="technical"] .heading{
+    grid-template-columns:8px 2em minmax(0,1fr) 4.2em 4.2em 2.4em 2.8em;column-gap:8px;
+  }
   input[type=range]{width:140px}
   .plan li{grid-template-columns:minmax(0,1fr) 4.5em}
   .plan .tests{display:none}
@@ -236,7 +255,6 @@ select{
   .rules th{grid-column:1 / span 2;padding:0}
   .rules td{font-size:var(--step-small);padding:0}
   .rules td.count{width:auto}
-  .close{flex-direction:column;gap:6px}
 }
 
 @media (prefers-reduced-motion:reduce){

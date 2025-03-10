@@ -1,4 +1,4 @@
-// Best and average fitness of every finished generation, for the chart
+// What every finished generation reached, for the history line
 class GenerationHistory{
     static #entries=[];
 

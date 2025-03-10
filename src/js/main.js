@@ -25,6 +25,7 @@ let mutationAmount=
 let paused=false;
 let speed=1;
 let statsDue=false;
+let view="general";
 
 // Longest time one frame may spend on simulation steps, in ms
 const stepBudget=12;
@@ -35,6 +36,7 @@ start();
 
 function start(){
     loadNetwork();
+    setView(localStorage.getItem("view"));
     setupRegions();
 
     const saved=BrainStorage.load();
@@ -52,11 +54,23 @@ function start(){
     Panels.syncNetworkControls(bestCar.brain);
     updateTimeControls();
     Sizing.init();
-    FitnessChart.draw();
+    HistoryLine.rebuild(profile);
     updateButtons();
     updateStats();
 
     requestAnimationFrame(animate);
+}
+
+// The overview shows the road and the generations; the technical view
+// adds the network, the readouts, the rules and the controls
+function setView(name){
+    view=name=="technical"?"technical":"general";
+    localStorage.setItem("view",view);
+    document.documentElement.dataset.view=view;
+    document.getElementById("viewGeneral")
+        .setAttribute("aria-checked",String(view=="general"));
+    document.getElementById("viewTechnical")
+        .setAttribute("aria-checked",String(view=="technical"));
 }
 
 // The network the last session ended with, before the first cars exist
@@ -90,6 +104,7 @@ function setupRegions(){
     road.handedness=profile.handedness;
     markRegion();
     Panels.updateScenarioList(profile);
+    HistoryLine.setScenarios(profile);
 }
 
 // The radio buttons follow the profile
@@ -108,6 +123,8 @@ function setRegion(name){
     localStorage.setItem("region",profile.name);
     markRegion();
     Panels.updateScenarioList(profile);
+    HistoryLine.setScenarios(profile);
+    HistoryLine.rebuild(profile);
     startSimulation(bestCar.brain);
     Panels.updatePolicy(profile,orchestrator);
     setStatus("Driving under "+Copy.profileName(profile.name));
@@ -212,7 +229,7 @@ function updateStats(){
 
     document.getElementById("generationStat").textContent=generation;
     document.getElementById("aliveStat").textContent=
-        cars.filter(c=>!c.damaged).length+"/"+cars.length;
+        HistoryLine.countAlive(cars)+"/"+cars.length;
     document.getElementById("distanceStat").textContent=
         Math.round(distance);
     document.getElementById("recordStat").textContent=
@@ -223,7 +240,7 @@ function updateStats(){
     const compliance=bestCar.compliance;
     const violations=compliance?compliance.violations.length:0;
     document.getElementById("fitnessStat").textContent=
-        Math.round(bestCar.fitness);
+        HistoryLine.format(bestCar.fitness);
     document.getElementById("violationStat").textContent=violations;
     document.getElementById("scenario").textContent=
         traffic.director.current
@@ -237,6 +254,8 @@ function updateStats(){
     Panels.updateLastViolation(compliance);
     Panels.updateViolations(cars);
     Panels.updateCurrentScenario(traffic.director.current);
+    HistoryLine.updateDrive(traffic.director.current);
+    HistoryLine.updateNow(bestCar,cars);
 }
 
 function describeDirective(directive){
@@ -265,10 +284,13 @@ function nextGeneration(){
     recordDistance=Math.max(recordDistance,getDistance(parent));
     GenerationHistory.push({
         generation:generation,
+        region:profile.name,
         best:parent.fitness,
-        average:cars.reduce((sum,c)=>sum+c.fitness,0)/cars.length
+        average:cars.reduce((sum,c)=>sum+c.fitness,0)/cars.length,
+        alive:HistoryLine.countAlive(cars),
+        broken:HistoryLine.countBroken(cars)
     });
-    FitnessChart.draw();
+    HistoryLine.rebuild(profile);
     generation++;
     startSimulation(
         parent.fitness>0?parent.brain:null
@@ -408,8 +430,10 @@ function render(time){
 
     carCtx.restore();
 
-    networkCtx.lineDashOffset=reducedMotion.matches?0:-time/50;
-    Visualizer.drawNetwork(networkCtx,bestCar.brain);
+    if(view=="technical"){
+        networkCtx.lineDashOffset=reducedMotion.matches?0:-time/50;
+        Visualizer.drawNetwork(networkCtx,bestCar.brain);
+    }
 }
 
 function togglePause(){
@@ -445,7 +469,7 @@ function updateTimeControls(){
 
 function clearHistory(){
     GenerationHistory.clear();
-    FitnessChart.draw();
+    HistoryLine.rebuild(profile);
 }
 
 function previewNetwork(){

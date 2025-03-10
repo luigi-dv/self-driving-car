@@ -1,7 +1,5 @@
 // Fills the readouts around the canvases from the state of the simulation
 class Panels{
-    static #restHint="A different network starts training again from "
-        +"generation 1. The saved brain stays saved, but will not fit.";
     static #svg="http://www.w3.org/2000/svg";
 
     // Violations of the current generation, counted once per record
@@ -27,8 +25,6 @@ class Panels{
             "frameStat",
             frame.toLocaleString("en-US")+" of "+max.toLocaleString("en-US")
         );
-        document.getElementById("frameBar").style.width=
-            Math.min(100,frame/max*100)+"%";
     }
 
     static updateWhy(car,road){
@@ -84,7 +80,6 @@ class Panels{
     static updateLastViolation(compliance){
         const last=compliance?compliance.last:null;
         document.getElementById("violationLine").hidden=last==null;
-        document.getElementById("violationEmpty").hidden=last!=null;
         Panels.#setText(
             "violation",
             last?Panels.#sentence(last.message):""
@@ -178,8 +173,6 @@ class Panels{
             profile.handedness=="LHT"
                 ?"driving on the left"
                 :"driving on the right";
-        document.getElementById("policyRegions").textContent=
-            Copy.list(profile.regions);
 
         Panels.#countCells=new Map();
         const rules=orchestrator?orchestrator.rules:[];
@@ -249,7 +242,7 @@ class Panels{
         const hint=document.getElementById("networkHint");
         hint.textContent=changed
             ?"Restarts training from generation 1: "+parts.join(", ")+"."
-            :Panels.#restHint;
+            :"";
         hint.classList.toggle("is-pending",changed);
         document.getElementById("networkApply").disabled=!changed;
     }
@@ -283,12 +276,10 @@ class Panels{
         const copyText=Copy.scenario(scenario.name);
         const item=document.createElement("li");
         const state=Panels.#create("span","state");
-        const detail=Panels.#create("span","detail");
         item.appendChild(Panels.#create("span","what",scenario.title));
         item.appendChild(Panels.#create("span","tests",copyText.tests));
         item.appendChild(state);
-        item.appendChild(detail);
-        return {item:item,state:state,detail:detail,about:copyText.about};
+        return {item:item,state:state};
     }
 
     static #setBoardState(row,state){
@@ -303,7 +294,6 @@ class Panels{
         row.state.textContent=state=="done"
             ?"Passed"
             :(state=="now"?"Now":"Ahead");
-        row.detail.textContent=state=="now"?row.about:"";
     }
 
     static #laneName(lane,road){

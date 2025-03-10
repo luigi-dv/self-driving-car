@@ -38,61 +38,34 @@ class Copy{
             "A short hazard flash after merging says thanks"
     };
 
-    // What a scenario tests, and what happens in it
+    // What a scenario tests
     static scenarios={
         SlowTrafficScenario:{
-            tests:"Which side to pass on",
-            about:"Slow vehicles sit in the lanes ahead. The car has to "
-                +"get past them on the side its region allows, then go "
-                +"back to its lane."
+            tests:"Which side to pass on"
         },
         FastApproachScenario:{
-            tests:"Giving way to faster traffic",
-            about:"While the car overtakes, a faster vehicle closes in "
-                +"from behind in the fast lane and, where the region "
-                +"gives it a meaning, flashes its high beams."
+            tests:"Giving way to faster traffic"
         },
         QueueScenario:{
-            tests:"Passing inside a queue",
-            about:"A slow queue fills every lane but the slow one, then "
-                +"clears. Where the region allows it, the car may pass "
-                +"the queue on the inside at a small speed difference."
+            tests:"Passing inside a queue"
         },
         RampMergeScenario:{
-            tests:"Who gives way at a ramp",
-            about:"A vehicle speeds up along the acceleration lane and "
-                +"joins the slow lane when there is a gap. The region "
-                +"decides whether the traffic on the road makes room."
+            tests:"Who gives way at a ramp"
         },
         LaneClosureScenario:{
-            tests:"Merging in turn",
-            about:"A stretch of one lane is closed for works. Traffic "
-                +"in the closing lane drives up to the closure and "
-                +"merges there, one vehicle at a time."
+            tests:"Merging in turn"
         },
         GridlockScenario:{
-            tests:"Opening an emergency corridor",
-            about:"Traffic slows to a crawl and an emergency vehicle "
-                +"comes through from behind. Where the region asks for "
-                +"it, every lane moves aside to open a corridor."
+            tests:"Opening an emergency corridor"
         },
         EmergencyStopScenario:{
-            tests:"Moving over for a stopped emergency vehicle",
-            about:"An emergency vehicle stands on the shoulder with its "
-                +"lights on. Where the region asks for it, the car "
-                +"leaves the lane beside it or slows down."
+            tests:"Moving over for a stopped emergency vehicle"
         },
         SustainedPassScenario:{
-            tests:"Reading a held indicator",
-            about:"A vehicle ahead overtakes with its indicator left "
-                +"on, which tells the traffic behind that it is staying "
-                +"in the passing lane."
+            tests:"Reading a held indicator"
         },
         HazardJamScenario:{
-            tests:"Slowing early for hazard lights",
-            about:"A vehicle ahead brakes hard with its hazard lights "
-                +"on, then drives on. The car should slow down before "
-                +"it gets there."
+            tests:"Slowing early for hazard lights"
         }
     };
 
@@ -102,7 +75,7 @@ class Copy{
     }
 
     static scenario(className){
-        return Copy.scenarios[className]||{tests:"",about:""};
+        return Copy.scenarios[className]||{tests:""};
     }
 
     // "SingleSidePassRule" -> "Single side pass"
@@ -118,13 +91,5 @@ class Copy{
         return [parts[0]].concat(
             parts.slice(1).map(p=>p.toLowerCase())
         ).join(" ");
-    }
-
-    // ["DE","FR","PL"] -> "DE, FR and PL"
-    static list(items){
-        if(items.length<2){
-            return items.join("");
-        }
-        return items.slice(0,-1).join(", ")+" and "+items[items.length-1];
     }
 }

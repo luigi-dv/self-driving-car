@@ -8,7 +8,7 @@ class Sizing{
     static init(){
         Sizing.apply();
         const observer=new ResizeObserver(()=>Sizing.apply());
-        ["myCanvas","networkCanvas","fitnessChart"].forEach(id=>{
+        ["myCanvas","networkCanvas"].forEach(id=>{
             observer.observe(document.getElementById(id));
         });
     }
@@ -16,14 +16,6 @@ class Sizing{
     static apply(){
         Sizing.#fitRoad();
         Sizing.fit(document.getElementById("networkCanvas"));
-        if(Sizing.fitChart()){
-            FitnessChart.draw();
-        }
-    }
-
-    // Returns true when the buffer of the chart changed
-    static fitChart(){
-        return Sizing.fit(document.getElementById("fitnessChart"));
     }
 
     static fit(canvas){
