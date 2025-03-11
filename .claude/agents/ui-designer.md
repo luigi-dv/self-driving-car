@@ -26,6 +26,18 @@ Plain and minimal. Two earlier passes were rejected: one for looking generic (ou
 - **The system typeface, three sizes.** No display type, no web font.
 - **Lists, not devices.** A section is a name on the left and plain content on the right. Do not introduce a metaphor, a board, a ticker or an oversized statement.
 - **The live simulation is the only picture.**
+- **Two views.** The overview is for watching: the road, one sentence, the history line. The technical view is for changing and inspecting. New detail goes in the technical view; the overview only gets something if something else leaves.
+- **Data is shown as a history line:** generations as entries on a vertical line, newest on top, one bar each. Do not add a chart, a card or a table where a row on the line would do.
+
+## Content
+
+Over-explaining is the commonest fault of a generated page. Before adding any text, check it against these:
+
+- A label names the thing. It does not describe it.
+- No sentence explains a control, a chart or a section.
+- A consequence is stated only when it is about to happen.
+- An empty state shows nothing.
+- If two elements say the same thing, one goes.
 
 Use the taste skill for its house rules and its lint. Its direction library and its inspector reward showcase density, which this project does not want: do not deal a new direction unless asked, and expect the inspector's "few pictures" and "empty screens" checks to fail.
 

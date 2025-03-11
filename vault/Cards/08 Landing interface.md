@@ -26,7 +26,12 @@ The page is a grey background, two canvases and a column of small icons. The wor
 
 ## How it was designed
 
-Three passes. The first followed the pattern literally and came out generic: nine outlined tiles and three accent colours ([[UI Review of the first design]]). The second used the taste skill and came out distinctive but borrowed: sign-coloured grounds, an amber accent, a departure board. The third keeps the second's structure and removes its devices: green accent, one ground, the system typeface, three sizes. See [[UI Design Spec]].
+Four passes, each one a correction. See [[UI Design Spec]].
+
+1. Outlined tiles and three accents: generic.
+2. The taste skill's dealt direction: distinctive, but an amber accent and borrowed devices.
+3. Plain lists and a green accent: clean, but it explained everything.
+4. Two views and a history line: the overview is the road, one sentence and the generations; the technical view holds the rest.
 
 ## Tasks
 
@@ -34,13 +39,14 @@ Three passes. The first followed the pattern literally and came out generic: nin
 - [x] Review of the first design
 - [x] Second design with the taste skill: direction, mockup, spec (rejected: amber accent, showcase devices)
 - [x] Third pass: green accent, minimal
+- [x] Fourth pass: overview and technical views, history line, prose cut
 - [x] Canvas theme: road, cars, sensors, network graph
 - [x] Speed, pause and step
-- [x] Generation history and fitness chart
+- [x] Generation history
 - [x] Page rebuilt
-- [x] Scenario list, rules table, lane arrows
+- [x] Scenario list, rules table, lane arrows (technical view)
 - [x] Works from 360 px wide to a large desktop
-- [x] Checked in a real browser (headless Chrome, 38 acceptance checks)
+- [x] Checked in a real browser (headless Chrome, 45 acceptance checks)
 - [ ] Looked at by a person in a normal browser window, and in Safari and Firefox
 
 ## Done when

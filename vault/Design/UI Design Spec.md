@@ -7,17 +7,49 @@ tags: [design, ui]
 
 Card: [[08 Landing interface]]. The design is the page itself: `index.html` and `src/css/style.css`.
 
-This is the third pass.
+## Passes
 
-1. **Outlined tiles, three accents.** Rejected as generic. See [[UI Review of the first design]].
-2. **"The dark room"**, dealt by the taste skill: sign-coloured grounds, an amber accent, a departure board, a display-size sentence. Rejected: the amber read as an assistant's brand colour, and the devices were borrowed from showcase sites.
-3. **This one: plain.** Green accent, one neutral ground, the system typeface, three sizes, lists instead of devices.
+1. Outlined tiles, three accents. Rejected as generic: [[UI Review of the first design]].
+2. "The dark room" from the taste skill. Rejected: amber accent, devices borrowed from showcase sites.
+3. Plain: green accent, one ground, system typeface, lists.
+4. **Two views and a history line.** Pass 3 still explained everything. This one cuts the prose and splits the page.
 
-## The idea
+## Two views
 
-The road is the page. It runs through the first screen from edge to edge and everything else is text on the same grid: what you can change hangs from the top, what the car is told sits beside the road, and the sections below are a name on the left with their content starting on the road's left edge.
+A toggle under the name, remembered between visits.
 
-Nothing is decorated. A thing is either text, a quiet button, or one of three canvases.
+| | Overview (default) | Technical |
+|---|---|---|
+| For | Watching | Changing and inspecting |
+| First screen | Road, regions, pause and speed, one sentence, the history line | The same, plus readouts, lane arrows, reasons, last broken rule |
+| Below | Nothing | Network, Brain, Scenarios, Rules |
+| History line | Generation, bar, best fitness; last 8 | Plus average, alive, broken; last 20 |
+
+Anything with class `tech` is hidden unless `<html data-view="technical">`.
+
+## Content rules
+
+- A label names the thing. It does not describe it.
+- No sentence explains a control, a chart or a section. The overview has one sentence: what the rules ask of the car.
+- A consequence is stated only when it is about to happen (a pending network change).
+- An empty state shows nothing.
+- If two elements say the same thing, one goes.
+
+## The history line
+
+The data is a line of generations, newest on top.
+
+```
+■ 5  ▬▬▬▬▬▬▬           4,513      now: bar and number are live
+│    ▪▪▫▫▫▫▫▫▫ Faster traffic behind      one mark per scenario of the drive
+■ 4  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬  11,580
+■ 3  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬  11,474
+```
+
+- The bar is best fitness, on one scale for all rows.
+- The green square is the generation driving now; the green mark is the scenario it is in.
+- A row carries the region's name only where the region changed.
+- It replaces the fitness chart, the frame meter and, in the overview, the scenario list and the readouts.
 
 ## Tokens
 
@@ -35,94 +67,53 @@ Nothing is decorated. A thing is either text, a quiet button, or one of three ca
 }
 ```
 
-- **Green marks what is selected or live:** the small square before the chosen region, speed and current scenario, the arrow on the lane the rules ask for, the slider thumbs, the sensor rays and a neuron that fired. Nothing is filled with it.
-- **Red is a broken rule,** as text.
-- **Three sizes.** Small for the chart key and the footer, body for everything, lead for the two sentences that carry a section (what the rules ask, what the model is).
-- **Surfaces step in tone.** No borders, shadows, gradients or rounded corners. Buttons are a tone step; Pause is the one solid light element.
-- **No web font.** The page makes no external request.
+Green only as a small mark. Red only as text. Surfaces step in tone: no borders, shadows, gradients or rounded corners. Three sizes; lead is used once, for the sentence. No web font.
 
 ## Layout
 
-Seven columns, 14px margins and gaps, from 1100px. Four columns from 720px, two below.
+Seven columns, 14px margins and gaps, from 1100px. Four from 720px, two below.
 
 ```
-┌ name ─┬ pitch ┬───────────┬ regions ┬ readouts ┬── time ┐
-│       │       │   road    │         │          │  Pause │
+┌ name ─┬ pitch ┬───────────┬ regions ┬ readouts* ┬─ time ┐
+│ views │       │   road    │         │           │ Pause │
 │                           │                             │
-├ what the rules ask ───────┤           ├ network ────────┤
-│ lane arrows, reasons      │           │ caption         │
+├ the sentence ─────────────┤         ├ history line ─────┤
+│ arrows*, reasons*         │         │                   │
 └───────────────┴───────────┴─────────────────────────────┘
-name of section │ content, from the road's left edge
-                │ scenarios: name, what it tests, state; the current one explained
-                │ learning: three sentences, each with its control; then the chart
-                │ model: one sentence, the network controls
-                │ rules: one sentence, then name, what it asks, kept or broken
-footer: one line
+section name* │ content*, from the road's left edge        * technical only
 ```
-
-On a phone: name and pitch, time controls, road at 56svh, regions beside readouts, the rest stacked.
 
 ## DOM contract
 
-Ids the scripts write. Everything else is static markup.
+| id | Written by | Content |
+|---|---|---|
+| `myCanvas`, `networkCanvas` | draw loop, `Sizing` | Road (buffer 340 wide); network, drawn only in the technical view |
+| `viewGeneral`, `viewTechnical` | `setView` | `aria-checked` |
+| `regionInput` | `setupRegions`, `setRegion` | One radio button per profile |
+| `pauseButton`, `stepButton`, `speed1Button`, `speed4Button`, `speed16Button` | time controls | Label, `aria-pressed`, `disabled` |
+| `status` | `setStatus` | Last message |
+| `whyLane`, `whySpeed`, `whySpeedNow` | `Panels` | "middle lane", "96 km/h", "88 km/h" |
+| `whyLaneMap`, `whyHere`, `whyReasons` | `Panels` | Lane arrows, where the car is, reasons |
+| `violationLine`, `violation`, `violationRule`, `violationSeverity` | `Panels` | Last broken rule of the best car; hidden when none |
+| `historyLine` | `HistoryLine` | First `li` is the generation driving now; the rest are built from `GenerationHistory` |
+| `generationStat`, `fitnessBar`, `fitnessStat`, `aliveNow`, `brokenNow` | `updateStats`, `HistoryLine` | The "now" row |
+| `scenarioStops`, `scenario` | `HistoryLine`, `updateStats` | One mark per scenario; the current one's name |
+| `aliveStat`, `distanceStat`, `recordStat`, `violationStat`, `frameStat` | `updateStats`, `Panels` | Readouts |
+| `modelParams`, `modelHidden` | `Panels` | From the running network |
+| `neuronsInput`, `neuronsStat`, `activationInput`, `networkHint`, `networkApply` | `previewNetwork`, `applyNetwork` | Staged network change; the hint is empty unless one is pending |
+| `savedStat`, `saveButton`, `discardButton`, `restoreButton`, `exportButton`, `importButton`, `importInput`, `nextButton` | `updateButtons`, markup | Brain |
+| `mutationInput`, `mutationStat` | `setMutation` | Mutation |
+| `scenarioList` | `Panels` | Name, what it tests, state |
+| `policyName`, `policyHandedness`, `policyRules` | `Panels` | Rule, what it asks, kept or broken |
 
-| id | Element | Written by | Content |
-|---|---|---|---|
-| `myCanvas` | canvas | draw loop, `Sizing` | Road. Buffer 340 wide, height follows the well |
-| `networkCanvas` | canvas | `Visualizer`, `Sizing` | Best car's network |
-| `regionInput` | div radiogroup | `setupRegions`, `setRegion` | One `button.plain.lamp[role=radio]` per profile |
-| `generationStat` `aliveStat` `distanceStat` `recordStat` `fitnessStat` `violationStat` | dd | `updateStats` | Readouts |
-| `scenario` | dd | `updateStats` | Current scenario title |
-| `pauseButton` `stepButton` `speed1Button` `speed4Button` `speed16Button` | button | time controls | Label, `aria-pressed`, `disabled` |
-| `status` | p status | `setStatus` | Last message |
-| `whyLane` `whySpeed` `whySpeedNow` | span | `Panels` | "middle lane", "96 km/h", "88 km/h" |
-| `whyLaneMap` | div | `Panels` | One `span.head` per lane in screen order, `is-target` on the directive's lane |
-| `whyHere` | div | `Panels` | One span per lane, `is-here` where the best car is |
-| `whyReasons` | ul | `Panels` | One sentence per reason |
-| `violationLine` `violation` `violationRule` `violationSeverity` `violationEmpty` | p, span | `Panels` | Last violation of the best car, or the empty line |
-| `directive` | p, visually hidden | `updateStats` | The directive as one sentence |
-| `scenarioList` | ol | `Panels` | One row per scenario: `span.what`, `span.tests`, `span.state`, `span.detail`; `is-done`, `is-now` |
-| `nextButton` `saveButton` `discardButton` `restoreButton` `exportButton` `importButton` `importInput` | button, input | markup, `updateButtons` | Brain actions |
-| `frameStat` `frameBar` | span | `Panels` | "1,240 of 7,200" and its meter |
-| `savedStat` | span | `updateButtons` | "gen 12" or "none" |
-| `mutationInput` `mutationStat` | range, output | `setMutation` | Mutation amount |
-| `fitnessChart` `fitnessEmpty` | canvas, p | `FitnessChart` | Best and average fitness per generation |
-| `modelParams` `modelHidden` | span | `Panels` | 82 and 6, from the running network |
-| `neuronsInput` `neuronsStat` `activationInput` `networkHint` `networkApply` | controls | `previewNetwork`, `applyNetwork` | Staged network change |
-| `policyName` `policyHandedness` `policyRegions` | span | `Panels` | The sentence above the rules table |
-| `policyRules` | tbody | `Panels` | One row per enabled rule: name, what it asks, "kept" or "14 broken, 2 out" |
+Words for rules and scenarios: `src/js/ui/copy.js`. Canvas colours: `src/js/ui/theme.js`.
 
-The words for rules and scenarios live in `src/js/ui/copy.js`.
+## Checks
 
-## Canvas palette
-
-In `src/js/ui/theme.js`. The canvases are transparent, so the ground shows around the road and the network.
-
-| What | Colour |
-|---|---|
-| Road surface, ramp | white at 7% (a tone step of the ground) |
-| Lane marks, edges | `#ECEEEB`, marks at 55% |
-| Best car | white |
-| Other learning cars | grey at 25% |
-| Traffic | four desaturated body colours |
-| Sensor rays, directive marker | green `#62C370` |
-| Lane closure | red `#F0776B` |
-| Vehicle lamps | their real colours |
-| Network: positive weight, fired neuron | green |
-| Network: negative weight | white |
-| Chart: best, average | white, white at 45%. No grid, no fill |
-
-## What the taste inspector says
-
-`lint.mjs`: 0 FAIL, 0 WARN.
-
-`inspect.mjs` measures a marketing page and asks for more of everything. On this pass it fails two checks and they are left failing on purpose:
-
-- **few pictures, no footage:** the page has three canvases and no imagery. That is the brief.
-- **empty screens:** the sections are short lists with space around them. That is also the brief.
-
-The house rules it shares with a plain page still hold and still pass: no outlined boxes, no gradients, no shadows, no uppercase labels, no monospace, nothing under 13px, one typeface, three sizes.
+- Taste `lint.mjs`: 0 FAIL, 0 WARN.
+- Taste `inspect.mjs` wants pictures and full screens. Not applicable to this page, by choice.
+- The overview holds under 60 words.
 
 ## Out of scope
 
-Manual driving mode, jumping to a scenario from the list, clicking a car to follow it, experiment mode, a light theme.
+Manual driving, jumping to a scenario, following another car, experiments, a light theme.
